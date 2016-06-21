@@ -1,37 +1,30 @@
-#it's a raw copy well documented copy will be uploaded soon
 import mraa
 import time
 
-x = mraa.Pwm(10)
-x.period_us(4640)
-x.enable(True)
-#a(0)
-def a(abcd):
-#while True:
-    init=0.13
-    abcd = float(abcd)*0.0023888
-    print abcd
-    val = init+abcd
-    x.write(val)
-#    time.sleep(1)
-#    while i<=.56:
-#        x.write(i)
-#        print i
-#        time.sleep()
-#        i += 0.001
-    #break
-#    time.sleep(1)
-a(0)
+pwm = mraa.Pwm(10)			#define pin number on Galelio board
+pwm.period_us(4640)			
+#pwm period it should 20ms, but i have used 4640 microsecond.
+# beacuse i am not getting proper result while using 20ms so i
+# reach at 4640 microsecond after try and error. I don't know
+#why it's working!!! but you try first with 20ms!
+
+pwm.enable(True)				#it's enable pin 10 for generating pwm signle
+
+def turn_servo(angle):
+    pwm_value = float(angle)*((.26+0.070)/180)+0.070 
+	#mapping with 0 to 180 degree
+	#hear minimum value of pwm is 0.070 and maximum value of pwm is .26 
+	print pwm_value
+    pwm.write(pwm_value)		#writing generated pwm value to the pin
+
 def main():
-    #i=0
-    #while i<=180:
-    #    a(i)
-    #    i+=.1
-    #    time.sleep(.1)
+	turn_servo(0)
     while (True):
         input = raw_input("enter angle between 0 to 180: ")
-        a(input)
+        turn_servo(input)
 
 if __name__ == "__main__":
     main()
+	
+###***I've not copiled this code after adding comments and changing variable name***###
 

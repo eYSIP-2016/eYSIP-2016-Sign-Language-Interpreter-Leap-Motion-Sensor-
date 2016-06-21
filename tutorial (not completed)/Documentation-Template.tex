@@ -1,0 +1,382 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	e-Yantra, IIT-Bombay
+
+%	Document Author: Saurav Shandilya
+%	Date: 16-August,2012
+%	Last Editted by: Saurav
+%   Date Last updated: 31-05-2016 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,a4paper]{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage{graphicx}
+\title{\textbf{\Huge{Sign Language Interpreter}}\vspace{6mm}\\Using Leap Motion Sensor}
+\usepackage[utf8]{inputenc}
+ 
+\usepackage{listings}
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+ 
+\author{Sanket R Bhimani}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+	\section{\textbf{\Huge{Tutorial Name:}}}
+	\begin{center}\huge{Sign language Interpreter}\\\Large{Using Leap Motion Sensor}\end{center}
+	\vspace{15mm}
+	\textbf{\Large{Objective:}}\\
+	\vspace{1mm}\\
+	Objective behind this project is to help deaf and dump people to communicate with normal people. So this system will try to interpreter their sign language into natural voice so normal people can understand what that person want to say.\\
+	\vspace{6mm}\\
+	\textbf{\Large{Short Intro:}}\\
+	\vspace{1mm}\\
+	Here we are using leap sensor for detecting gesture and then we will convert in audio with mp3 module
+	\newpage
+	\section{\textbf{\Huge{Prerequisites:}}}
+	\vspace{1cm}
+	\tab Before going ahead it is better to learn these basic things
+    \vspace{1cm}
+	\begin{itemize}
+	    \item Basic knowledge of Python
+	    \item Basic knowledge of javascript and HTML
+	    \item Basic knowledge of Linux
+	    \item Basic knowledge of NLTK
+	    \item Basic Electronics knowledge
+	\end{itemize}
+	\newpage
+	\section{\textbf{\Huge{Requirement}}}
+	\vspace{1cm}
+	\begin{itemize}
+	    \item Hardware Requirement:
+	    \begin{itemize}
+	        \item Galileo Board
+	        \item Leap Motion Sensor
+	        \item microSD card of minimum size of 8 GB with card reader
+	        \item speaker
+	        \item MP3 Module
+	        \item LAN cable or wifi module(for connecting board with PC)
+	    \end{itemize}
+	    \vspace{1cm}
+	    \item Software Requirement:
+	    \begin{itemize}
+	        \item Python editor (vi is enough)
+	        \item Leap sdk
+	        \item LeapTrainer.js
+	        \item NLTK for Python
+	        \item Tornado Web-socket
+	        \item Any web browser
+	        \item Bitwise SSH Client
+	        \item Wireshark(optional)
+	    \end{itemize}
+	\end{itemize}
+	\newpage
+	\section{\textbf{\Huge{Theory and Description}}}
+	\vspace{1cm} \tab{This much things you must learn before starting this project:}
+	\begin{itemize}
+	    \begin{itemize}
+	        \item Leap motion library for Python
+	        \item LeapTrainer.js
+	        \item Python programming
+	        \item Websocket
+	        \item getting started with Galileo board
+	        \item interfacing with MP3 module
+	    \end{itemize}
+	\end{itemize}
+	\vspace{1cm}
+	\textbf{\huge{Leap motion Library:}}
+	\vspace{1cm}\\
+	\tab{We will see about python library. All class’s name are given as human body part so it is very easy to understand. Main and useful classes are,}
+	\begin{itemize}
+	    \item Frame
+        \item Hand
+        \item Finger
+        \item Pointable
+        \item Arm
+	\end{itemize}
+	
+	\tab{For getting data from leap sensor first we need to register listener class with controller object and for that first we need to create listener class. And register that listener class object with controller object you can find the basic code for getting basic frame data from given code examples “connection\_with\_leap.py”}\\
+	\newpage
+	\textbf{\Large{Frame:}}
+	\vspace{0.5cm}\\
+    \tab{A frame is an object which can be generated from controller object. Leap sensor sends data through this frame object in listener class. From frame object, we can find all other objects. Means all row data comes with the frame. As per leap FPS on\_frame(self,controller) method of listener class is called with a new frame. Each frame has its unique id and time stamp.}\\
+
+    \tab{In on\_frame method from controller object, we can get the current frame. It also supports serialization.}\\
+
+    \vspace{3cm}
+    \textbf{\Large{Hand:}}
+	\vspace{0.5cm}\\
+	\tab{Hands are the main entity tracked by the Leap Motion controller. The Hand class represents a physical hand detected by the Leap. A Hand object provides access to lists of its pointables as well as attributes describing the hand position, orientation, and movement.}\\
+	\tab{From current frame object, we can get the current set of detected hand as an array. We can get hand from hands object by these properties,}\\
+	\begin{lstlisting}[language=Python, caption=getting frame and hand object]
+frame = controller.frame() 
+hands = frame.hands
+
+leftmost = hands.leftmost
+rightmost = hands.rightmost
+frontmost = hands.frontmost\end{lstlisting}
+\vspace{0.5cm}
+    We can get these characteristics from hand object,
+    \begin{itemize}
+        \item isRight, isLeft — Whether the hand is a left or a right hand.
+        \item palm\_position — The center of the palm measured in millimeters from the Leap Motion origin.
+        \item palm\_velocity — The speed and movement direction of the palm in millimeters per second.
+        \item palm\_normal — A vector perpendicular to the plane formed by the palm of the hand. The vector points downward out of the palm.
+        \item direction — A vector pointing from the center of the palm toward the fingers.
+        \item grab\_strength, pinch\_strength — Describe the posture of the hand.
+        \item stabilized\_palm\_position — The stabilized palm position of this Hand.
+        \item Motion factors — Provide relative scale, rotation, and translation factors for movement between two frames.
+    \end{itemize}
+    \vspace{.5cm}
+    We can get a pitch, yaw, and roll of hand by these properties,
+    \vspace{.5cm}
+    \begin{lstlisting}[language=Python, caption=getting pitch\, yaw and roll from hand object]
+pitch = hand.direction.pitch
+yaw = hand.direction.yaw
+roll = hand.palm_normal.roll\end{lstlisting}
+\vspace{2cm}
+    \textbf{\Large{Figures \& Pointables:}}
+	\vspace{0.5cm}\\
+	\tab{Fingers are Pointable objects that the Leap Motion software has classified as a finger. Get valid Finger objects from a Frame or a Hand object.}\\
+	\vspace{.5cm}
+	This can be generated from frame object or hand object. As this way,
+	\begin{lstlisting}
+frame_pointables = frame.pointables
+hand_pointables = hand.pointables
+known_pointable = hand.pointable(known_id)
+finger = Finger(pointable)\end{lstlisting}
+\vspace{1cm}
+\tab{If pointable is detected as the particular figure then and then only it can be returned as finger object. But mostly this pointer is detected as a finger.}
+\vspace{.5cm}
+We can get a bone object from finger object and get the position of all joints.
+	\begin{lstlisting}
+bone = finger.bone(Bone.TYPE_PROXIMAL)\end{lstlisting}
+\vspace{2cm}
+\textbf{inputs:}
+\begin{itemize}
+    \item 0 = TYPE\_METACARPAL – The metacarpal bone.
+    \item 1 = TYPE\_PROXIMAL – The proximal phalanx; the closest bone segment to the hand.
+    \item 2 = TYPE\_INTERMEDIATE – The intermediate, or middle, phalanx.
+    \item 3 = TYPE\_DISTAL – The distal phalanx; the bone segment furthest from the hand.
+\end{itemize}
+\vspace{1cm}
+
+\begin{lstlisting}
+
+Joint_position = finger.joint_position(0)
+    \end{lstlisting}
+\vspace{1cm}
+
+\textbf{inputs:}
+\begin{itemize}
+    \item 0 = JOINT\_MCP – The metacarpophalangeal joint, or knuckle, of the finger.
+    \item 1 = JOINT\_PIP – The proximal interphalangeal joint of the finger. This joint is the middle joint of a finger.
+    \item 2 = JOINT\_DIP – The distal interphalangeal joint of the finger. This joint is closest to the tip.
+    \item 3 = JOINT\_TIP – The tip of the finger.
+\end{itemize}
+\vspace{1cm}
+We can get this type of properties from pointable object,
+\begin{itemize}
+    \item id  -  A unique ID assigned to this Pointable object.
+    \item Frame - The Frame associated with this Pointable object.
+    \item Hand - The Hand associated with this finger.
+    \item tip\_position - The tip position in millimeters from the Leap Motion origin.
+    \item tip\_velocity - The rate of change of the tip position in millimeters/second.
+    \item direction - The direction in which this finger is pointing.
+    \item width - The estimated width of the finger in millimeters.
+    \item length - The estimated length of the finger in millimeters.
+    \item is\_finger - Whether or not the Pointable is classified as a finger.
+    \item stabilized\_tip\_position - The stabilized tip position of this Pointable.
+    \item time\_visible - The duration of time this Pointable has been visible to the Leap Motion Controller.
+\end{itemize}
+\vspace{2cm}
+    \textbf{\Large{Arm:}}
+	\vspace{0.5cm}\\
+	\tab{There is also an arm object which gives data related elbow\_position, arm.wrist\_position, width, direction, the basis of all three axises.}\\
+	\vspace{.5cm}
+	Arm object is generated from hand object.
+	\begin{lstlisting}
+hand = frame.hands.frontmost
+arm = hand.arm
+\end{lstlisting}
+\vspace{1cm}
+
+\textbf{attributes:}
+\begin{itemize}
+    \item basis:\\
+\tab{Basis vectors specify the orientation of an arm.}
+    \begin{itemize}
+        \item x\_basis. Perpendicular to the longitudinal axis of the arm; exits leterally through the sides of the wrist.
+        \item y\_basis or up vector. Perpendicular to the longitudinal axis of the arm; exits the top and bottom of the arm. More positive in the upward direction.
+        \item z\_basis. Aligned with the longitudinal axis of the arm. More positive toward the elbow.
+    \end{itemize}
+    \vspace{2cm}
+    	\begin{lstlisting}
+basis = arm.basis
+x_basis = basis.x_basis
+y_basis = basis.y_basis
+z_basis = basis.z_basis
+center=arm.elbow_position+(arm.wrist_position-arm.elbow_position*.05
+arm_transform = Leap.Matrix(x_basis, y_basis, z_basis, center)
+\end{lstlisting}
+\vspace{1cm}
+    \item direction - The normalized direction of the arm from elbow to wrist.
+    \item elbow\_position - The position of the elbow.
+    \item width - The average width of the arm.
+    \item wrist\_position - The position of the wrist.
+\end{itemize}
+\vspace{3cm}
+Here we will use only some properties like,
+\begin{itemize}
+    \item In hand,
+    \begin{itemize}
+        \item direction
+        \item palm\_position
+        \item stabilized\_palm\_position
+    \end{itemize}
+    \item In pointable,
+    \begin{itemize}
+        \item direction
+        \item tip\_position
+        \item stabilized\_tip\_position
+    \end{itemize}
+\end{itemize}
+	\newpage
+	\textbf{\huge{LeapTrainer.js:}}
+	\vspace{1cm}\\
+	\tab{This API is used gesture and pose learning and recognition framework for leap motion sensor. This is javascript based API, so using that framework we can detect gestures and poses in a web browser, and then using websocket it will go to python program.}
+	\vspace{.5cm}
+	So here is the overview of this API,
+	\vspace{.5cm}
+	\textbf{Uses:}
+	\begin{lstlisting}
+<script src="http://js.leapmotion.com/0.2.0/leap.min.js"></script>
+<script src="/path/to/leaptrainer.min.js"></script>
+\end{lstlisting}
+\vspace{1cm}
+\tab{You need to include these two files for using this framework. The first file is for connection with leap sensor and second for this framework.}
+\tab{Then we need to create leap sensor’s object and trainer object}
+\vspace{.5cm}
+\begin{lstlisting}
+var leapController = new Leap.Controller();
+var trainer = new LeapTrainer.Controller({controller: leapController});
+leapController.connect();
+\end{lstlisting}
+\vspace{1cm}
+\textbf{Training the system:}
+\vspace{.5cm}
+\tab{We can train the system by adding new gesture or pose to system, and we can add new gesture or pose by calling this method,}
+\begin{lstlisting}
+trainer.create('Halt');
+\end{lstlisting}
+\vspace{.5cm}
+\tab{here in place of ‘Halt’ give any name related to your gesture or pose. And we can do something when this gesture is recognized like,}
+\begin{lstlisting}
+trainer.on('Halt', function() { console.log('Stop right there!'); });
+\end{lstlisting}
+\newpage
+\vspace{1cm}
+\textbf{Importing and Exporting from LeapTrainer:}
+\vspace{.5cm}\\
+\tab{This feature is most useful in real application. Because normally wat happened whatever data we create like learning gestures or poses, are temporary means once you reload the script all objects will be reinitialized so all saved gestures or poses data will be lost. So by using this feature we can save that data.}
+\tab{This framework exports data in the form of JSON and also accepts imports in the form of JSON.}
+\begin{lstlisting}
+var savedGesture = trainer.toJSON('Halt'); 
+//Exporting to JSON
+
+trainer.fromJSON(savedData);
+//Importing from JSON
+\end{lstlisting}
+This can be used for saving and fetching gesture or pose data into or from file
+\vspace{2cm}
+\textbf{Options:}
+Here are some options for changing the setting of LeapTrainer,
+\begin{itemize}
+    \item \textbf{controller:} An instance of Leap.Controller class from the Leap Motion Javascript API. This will be created with default settings if not passed as an option.
+    \item \textbf{pauseOnWindowBlur:}If this variable is TRUE, then the LeapTrainer Controller will pause when the browser window loses focus, and resume when it regains focus (default: FALSE)
+    \item \textbf{minRecordingVelocity:}The minimum velocity a frame needs to be measured at in order to trigger gesture recording. Frames with a velocity below this speed will cause gesture recording to stop. Frame velocity is measured as the fastest moving hand or fingertip in view (default: 300)
+    \item \textbf{maxRecordingVelocity:}The maximum velocity a frame can measure at and still trigger pose recording, or above which to pose recording will be stopped (default: 30)
+    \item \textbf{minGestureFrames:} The minimum number of frames that can contain a recognizable gesture (default: 5)
+    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
+    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
+    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
+    \item \textbf{hitThreshold:}The return value of the recognition function above which a gesture is considered recognized. Raise this to make gesture recognition more strict (default: 0.7)
+    \item \textbf{trainingCountdown:}The number of seconds after startTraining is called that training begins. This number of training-countdown events will be emitted. (default: 3)
+    \item \textbf{trainingGestures:}The number of training gestures required to be performed in training mode (default: 1)
+    \item \textbf{convolutionFactor:}The factor by which training samples will be convolved over a gaussian distribution in order to expand the input training data. Set this to zero to disable convolution (default: 0)
+    \item \textbf{downtime:}The number of milliseconds after a gesture is identified before another gesture recording cycle can begin. This is useful, for example, to avoid a 'Swipe Left' gesture firing when a user moves his or her hand quickly back to center directly after performing a 'Swipe Right' (default: 1000)
+\end{itemize}
+\vspace{1cm}
+Options can be passed to the LeapTrainer.Controller constructor like so:
+\vspace{.5cm}
+\begin{lstlisting}
+new LeapTrainer.Controller({minRecordingVelocity: 100, downtime: 100});
+\end{lstlisting}
+\newpage
+\textbf{Events:}
+\vspace{.5cm}\\
+The LeapTrainer controller will emit events to listening components during training and recognition.
+\vspace{.5cm}
+The framework events are:
+\begin{itemize}
+    \item \textbf{gesture-created:} Fired when a new gesture is added to a LeapTrainer controller object - either by a call to the create()function or by importing a saved gesture via the fromJSON() function. Carries two parameters: gestureName andtrainingSkipped. The latter will be true if this gesture was created by a call to the create() function in which the second parameter was true.
+    \item \textbf{training-countdown:} Fired a configurable number of times, once per second, after the startTraining function is called, before the training started event fires and actual training begins
+    \item \textbf{training-started:} Fired when training begins on a gesture - carries a single parameter, gestureName
+    \item \textbf{training-complete:} Fired when training completes on a gesture - carries three parameters, gestureName,trainingGestures, and isPose. The second parameter is the array of encoded gestures recorded during training. The final parameter indicates whether a pose or a gesture has been learned.
+    \item \textbf{training-gesture-saved:}: Fired during training when a new training gesture is recorded - carries two parameters,gestureName, and trainingGestures. The latter is the array of encoded gestures recorded so far during training, the last entry of which will be the gesture just recorded.
+    \item \textbf{started-recording:}Fired when the recordableFrame function returns TRUE and causes gesture recordingFired when the recordableFrame function returns FALSE and recording was active, causing gesture recording to stop
+    \item \textbf{gesture-detected:} Fired when any gesture is detected, regardless of whether it is recognized or not. This event fires before recognition are attempted and carries two parameters, gesture and frameCount. The first is the recorded encoded gesture, the second is the number of frames in the gesture.
+    \item \textbf{gesture-recognized:} Fired when a known gesture is recognized - carries two parameters, hit and gestureName. The fit parameter is a value between 0.0 and 1.0 indicating how closely the recognized gesture was matched to the training data, with 1.0 being a 100\% match.
+    \item \textbf{gesture-unknown:} Fired when a gesture is detected that doesn't match any known gesture sufficiently to be considered a match. This event carries two parameters, bestHit and closestGestureName, identifying the closest known gesture.
+\end{itemize}
+\vspace{.5cm}
+These events can be registered as this way,
+\vspace{.5cm}
+\begin{lstlisting}
+trainer.on('training-started', function(movementName) {
+    console.log('Started training ' + movementName);
+});
+\end{lstlisting}
+\newpage
+	\section{Experiment}
+	$<$ Give experiment relevant to this tutorial. Include circuit schematic, connection diagrams, code snippet. You must have subsection for each example.$>$
+	\newpage
+	\section{Exercise}
+	$<$ Give few sample experiment for practice. Include quiz or questions(as required).$>$
+	\newpage
+	\section{References}
+	$<$ Mention all references, books, articles or links required to understand the topic.$>$
+	
+\end{document}
+
+
+
