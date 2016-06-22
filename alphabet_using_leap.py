@@ -43,10 +43,10 @@ class letters:                                                              #let
         self.fing1                                                          #is mean of x & z direction like (x^2 + z^2)^.5
         self.fing2                                                          #is mean of x & z position like (x^2 + z^2)^.5
 
-    def isthis(self,f1,f2):
+    def isthis(self,f1,f2):										#this method compares  two pose stored and performed
         cnt =0
         for i in f1:
-            if i>(self.fing1[cnt]+.12) or i<(self.fing1[cnt]-.12):
+            if i>(self.fing1[cnt]+.12) or i<(self.fing1[cnt]-.12):		#here .12 and 9 defines range shorter range means accurate results but also problem with detection
                 return False
             cnt+=1
         cnt = 0

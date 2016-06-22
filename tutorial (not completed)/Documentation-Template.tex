@@ -13,10 +13,10 @@
 \usepackage{graphicx}
 \title{\textbf{\Huge{Sign Language Interpreter}}\vspace{6mm}\\Using Leap Motion Sensor}
 \usepackage[utf8]{inputenc}
- 
+ \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{color}
- 
+ \usepackage{hyperref}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -367,8 +367,96 @@ trainer.on('training-started', function(movementName) {
 });
 \end{lstlisting}
 \newpage
-	\section{Experiment}
-	$<$ Give experiment relevant to this tutorial. Include circuit schematic, connection diagrams, code snippet. You must have subsection for each example.$>$
+\textbf{\huge{Installation of Linux image in Galileo board:}}
+	\vspace{1cm}\\
+	\tab{In Galileo board, we can install Linux, windows IOT or os x. So the interface with board become easy. Here we will use Linux image. For that, we need to write Linux image on the sd card. From sd card, Galileo board will boot.}\\
+	\vspace{.5cm}\\
+	\textbf{\Large{So How to prepare sd card???}}\\
+	\vspace{.3cm}\\
+	\textbf{Step 1:}\\
+	Download Linux image from this location.\\
+	\url{https://downloadmirror.intel.com/26028/eng/iot-devkit-prof-dev-image-galileo-20160525.zip}\\
+	You will get one zip file extract it. You will find one ‘.direct’. You need to write this into sd card\\
+	\vspace{.3cm}\\
+	\textbf{Step 2:}\\
+	Download this software from this location,\\
+\url{http://download.softpedia.com/dl/d5a643aad00816ee735372c2d530a1a2/57584b56/100173006/software/cd_dvd_tools/Win32DiskImager-0.9.5-binary.zip}\\
+this will be helpful for writing an image in sd card.\\
+\vspace{.3cm}\\
+\includegraphics[width=\linewidth]{1.png}
+\vspace{.3cm}\\
+Select Image File which you have downloaded earlier in ‘Image File’ tab(‘.direct’ file)\\
+Select sd card in ‘Device tab’\\
+Now click on ‘Write’ button, it will take some time. And wait until write process completes\\
+\vspace{.3cm}\\
+	\textbf{Step 3:}\\
+	\vspace{.3cm}\\
+	\tab{Now insert sd card in galileo board and connect LAN cable with your PC and galileo board. Now connect the power supply with galileo board.}
+
+\tab{now the board will automatically boot.}
+\tab{There will be blinking LED near sd card port. Wait until it stops lighting. Because it shows IO related sd card. So, when it become stop, IO related sd card is also stopped so the booting process is completed.}
+\tab{Now you need to find  the IP address of your board. For that, you can use any network packet tracer software like Wireshark, ettercap or any other.}
+
+\tab{I am using Wireshark.}
+
+\tab{Now open Wireshark select ethernet as a network adapter. It will start tracing all packet data on ethernet. But here on an ethernet network, there is only two devices are there your PC and board. So there is only two IP address data. (ignore IPs with 255, 251, 224 and more than 200 value in last two part like 192.168.0.255 or 255.255.255.0 ) so find your PC IP address using this command }
+\begin{lstlisting}
+ipconfig (for windows)}
+ifconfig (for Linux)}
+\end{lstlisting}
+\tab{Now another IP showing on Wireshark is your board IP. }
+\vspace{.3cm}\\
+\includegraphics[width=\linewidth]{2.png}
+\vspace{.3cm}\\
+Your Wireshark windows:\\
+\vspace{.3cm}\\
+\includegraphics[width=\linewidth]{3.png}
+\newpage
+	\textbf{Step 3:}\\
+	\vspace{.3cm}\\
+	Now, from any SSH client make connection with board and use. :?)\\
+(I’m using Bitvise SSH client)\\
+Enter IP address and username: root there is no password.\\
+\vspace{.3cm}\\
+\includegraphics[width=\linewidth]{4.png}
+\vspace{.3cm}\\
+Click on login, and wait. Now two windows will open one for terminal and another for file transfer.
+Your board is ready! :?)
+  \vspace{.3cm}\\
+\includegraphics[width=9cm]{5.png}
+\vspace{.3cm}\\
+\includegraphics[width=\linewidth]{6.png}
+\vspace{.3cm}\\
+
+	\newpage
+	\textbf{\huge{Interfacing MP3 module:}}
+	\vspace{1cm}\\
+	\tab{MP3 module is used to play audio files stored in separate memory card attached with module. Control of this module is done the hex code sent from any controller via UART port. Here we will send code from Galileo board from Rx Tx pin to the board, there are some specified method to generating hex code which you can find on it's data sheet. We will se about that in next topic}
+	\newpage
+
+	\section{\textbf{\Huge{Implementation:}}}
+	\vspace{1cm}
+	\begin{itemize}
+	    \item Alphabet training and recognizing with leap motion
+	    \item Basic structure of system
+	    \item Sending and saving data generated through LeapTrainer.js to Galileo board
+	    \item Changes in Interface of LeapTrainer
+	    \item Make natural sentence from words using NLTK
+	    \item Make simple player for MP3 module
+	    \item Link main project with MP3 module
+	\end{itemize}
+	\vspace{2cm}
+	\textbf{\huge{Alphabet training and recognizing with leap motion:}}
+	\vspace{1cm}\\
+	\tab{Here we want to make a programme which records or say learns pose hand and then it will recognize. Means there will be two mode learning and recognizing. In Learning mode we need to perform pose so this pose will be saved for future reference and need to provide one alphabet for that pose. and In recognizing mode we need to perform specific pose so programe will recognize that pose and give related alphabet}\\
+	\tab{Here we have used pointables x direction, pointable z diirection, pointable x stabilized tip position, pointable z stabilized tip position, stabilized palm position of x axis and z axis.}\\
+	\tab{Here we want to implement a programme which is independent of hand's position means we can perform action at any position in range of sensor.  so we have take data relative palm center so we have used stabilized palm position but here only x and z axis is useful because we don't need to care about height from sensor.}\\
+	\tab{Here we will find radius distance from palm center to every tip of  finger  so we need to find mean position of tip's x and z co-ordinates related to palm center}\\
+	\tab{We are also taking direction vectored so we can increase range of detection of radius distance}\\
+	\tab{Then sum interface related programming. whole programme is in python language you caan find at github \url{https://github.com/sanketbhimani/eYSIP-2016-Sign-Language-Interpreter-Leap-Motion-Sensor-/blob/master/alphabet_using_leap.py}}\\
+	\vspace{.5cm}\\
+	\textbf{Silly mistake I made and also solve!}\\
+	\tab{While copping object I was directly write like a = b. so programme was not working properly and only large performed pose goes to every object. I was not understanding what was happening. what was happening, when I write a = b it just transfer a pointer no new memory is allocated so when I change value for one object all values will change because they all are pointing to same memory location. then i used a = copy.deepcopy(b) then it will allocate new memory for that object. and it is working fine!!!}
 	\newpage
 	\section{Exercise}
 	$<$ Give few sample experiment for practice. Include quiz or questions(as required).$>$
