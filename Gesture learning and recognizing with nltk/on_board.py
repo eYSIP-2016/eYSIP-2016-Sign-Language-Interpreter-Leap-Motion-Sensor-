@@ -1,7 +1,3 @@
-
-###THIS WILL BE AT GALILEO BOARD SIDE###
-###Whole documented code will be soon###
-
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
@@ -20,7 +16,7 @@ track_hex = bytearray([0x7E,0xFF,0x06,0x03,0x00,0x00,0xFF,0xFF,0xFF,0xEF])
 class WSHandler(tornado.websocket.WebSocketHandler):
 
     map_with_filename = [
-            ('I FEEL SLEEPY', '9'),
+            ('I FEEL SLEEP', '9'),
             ('WHAT IS THIS', '16'),
             ('THE INTERNET IS NOT WORKING', '15'),
             ('ALL DONE', '1'),
@@ -39,110 +35,38 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             ('HOW ARE YOU', '3'),
             ('I AM SO HAPPY', '6'),
             ('PLEASE, TURN ON THE FAN', '12'),
-            ('HELLO', '20'),
-            ('EAT','21'),
-            ('COME','22'),
-            ('GIRL','23'),
-            ('HOME','24'),
-            ('ASK','25'),
-            ('MOTHER','26'),
-            ('KNOW','27'),
-            ('HOW','28'),
-            ('DRIVE','29'),
-            ('FATHER','30'),
-            ('DRINK','31'),
-            ('MY','32'),
-            ('GIVE','33'),
-            ('HELP','34'),
-            ('GOOD','35'),
-            ('BOY','36'),
-            ('WAIT','37'),
-            ('WHY','38'),
-            ('WHERE','39'),
-            ('YES','40'),
-            ('SCHOOL','41'),
-            ('WHICH','42'),
-            ('SEE','43'),
-            ('WATER','45'),
-            ('TIME','46'),
-            ('WHAT','47'),
-            ('PLEASE','48'),
-            ('WHO','49'),
-            ('NO','50'),
-            ('NAME','51'),
-            ('PLAY','52'),
-            ('TOILET','53'),
-            ('YOU','44'),
-            ('ARE','54'),
-            ('IS','55'),
-            ('YOUR','56')
+            ('HELLO', '20')
          ]
                                                                                                                                                                                             
     play_from_sdcard = bytearray([0x7E,0xFF,0x06,0x09,0x00,0x00,0x02,0xFE,0xF0,0xEF])
     track_hex = bytearray([0x7E,0xFF,0x06,0x03,0x00,0x00,0xFF,0xFF,0xFF,0xEF])
     u = mraa.Uart(0)
     flg = 0
-    flag = 0
     name = ""
     u.setBaudRate(9600)
     u.write(play_from_sdcard)
     def open(self):
         print 'connection opened...'
-        self.write_message("The server says: 'Hello'. Connection was accepted.")
        #self.play_file(2)
 
     def on_message(self, message):
-        #self.write_message("The server says: " + message + " back at you")
-        print message
-        if message == "#123#":
-            WSHandler.flg = 1
-            print message
-        elif message == "#789#":
-            WSHandler.flag = 1
-        elif WSHandler.flag == 1:
-            WSHandler.flag = 0
-            words = message.split(' ')
+		if message == "#123#":
+			WSHandler.flg = 1
+		elif WSHandler.flg == 1:
+			WSHandler.flg = 0
+			for i in WSHandler.map_with_filename:
+				if(i[0] == message):
+					self.play_file(int(i[1]))
+					break;
+		else:
+			words = message.split(' ')
             for i in words:
                 for j in WSHandler.map_with_filename:
                     if(j[0] == i):
                         self.play_file(int(j[1]))
                         break
                 time.sleep(.15)
-        elif WSHandler.flg == 1:
-            WSHandler.name = message
-            WSHandler.flg = 3
-            print message,"added"
-        elif message == "#456#":
-            WSHandler.flg = 2
-            print message
-        elif WSHandler.flg == 2:
-            with open('a.json', 'r') as f:
-                data = json.load(f)
-                data.pop(message, None)
-                f.close()
-            with open('a.json', 'w') as f:
-                json.dump(data, f)
-                f.flush()
-                f.close()
-            WSHandler.flg = 0
-            print message,"deleted"
-        elif WSHandler.flg == 3:
-            with open('a.json', 'r') as f:
-                data = json.load(f)
-                data[WSHandler.name] = message
-                f.close()
-            with open('a.json', 'w') as f:
-                json.dump(data, f)
-                f.flush()
-                f.close()
-            WSHandler.flg = 0
-            #print message
-        else:
-            print 'received:', message
-            for i in WSHandler.map_with_filename:
-                if(i[0] == message):
-                    self.play_file(int(i[1]))
-                    break;
+        
 
 
 
