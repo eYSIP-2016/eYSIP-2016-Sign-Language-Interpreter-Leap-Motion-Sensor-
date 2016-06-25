@@ -21,7 +21,7 @@ import urlparse
 from urllib2 import HTTPError
 from urllib2 import URLError
 
-websocket.enableTrace(False)
+websocket.enableTrace(True)
 ws = websocket.create_connection("ws://169.254.6.158:1234")
 
 class listener(Leap.Listener):
@@ -109,6 +109,216 @@ class words:
 			else:
 				return 0
 				
+
+				
+				
+def get_ginger_url(text):
+	API_KEY = "6ae0c3a0-afdc-4532-a810-82ded0054236"
+
+	scheme = "http"
+	netloc = "services.gingersoftware.com"
+	path = "/Ginger/correct/json/GingerTheText"
+	params = ""
+	query = urllib.urlencode([
+		("lang", "US"),
+		("clientVersion", "2.0"),
+		("apiKey", API_KEY),
+		("text", text)])
+	fragment = ""
+
+	return(urlparse.urlunparse((scheme, netloc, path, params, query, fragment)))
+
+
+def get_ginger_result(text):
+
+	url = get_ginger_url(text)
+	try:
+		response = urllib.urlopen(url)
+	except HTTPError as e:
+			print("HTTP Error:", e.code)
+			quit()
+	except URLError as e:
+			print("URL Error:", e.reason)
+			quit()
+	except IOError, (errno, strerror):
+		print("I/O error (%s): %s" % (errno, strerror))
+		quit
+
+	try:
+		result = json.loads(response.read().decode('utf-8'))
+	except ValueError:
+		print("Value Error: Invalid server response.")
+		quit()
+
+	return(result)
+
+
+def grammar(original_text):
+	fixed_text = original_text
+	results = get_ginger_result(original_text)
+
+	# Correct grammar
+	if(not results["LightGingerTheTextResult"]):
+		return(original_text)
+
+	# Incorrect grammar
+	fixed_gap = 0
+	for result in results["LightGingerTheTextResult"]:
+		if(result["Suggestions"]):
+			from_index = result["From"]
+			to_index = result["To"] + 1
+			suggest = result["Suggestions"][0]["Text"]
+			incorrect = original_text[from_index:to_index]
+			original_text = original_text[:from_index] + incorrect + original_text[to_index:]
+			fixed_text = fixed_text[:from_index-fixed_gap] + suggest + fixed_text[to_index-fixed_gap:]
+			fixed_gap += to_index-from_index-len(suggest)
+	return(fixed_text)				
+			
+			
+				
+
+def natural_sentence(string):
+	pst = PunktSentenceTokenizer(string)
+	t = pst.tokenize(string)
+
+	word = nltk.word_tokenize(t[0])
+	tagged = nltk.pos_tag(word)
+	print tagged
+	chunkGram = r"""WRB:{<WRB.?>*<WP>*<WDT>?}"""
+	chunkParser = nltk.RegexpParser(chunkGram)
+	chunked = chunkParser.parse(tagged)
+	for subtree in chunked.subtrees():
+		if subtree.label() == 'WRB':
+			for j in subtree.leaves():
+				f = 0
+				final = ""
+				final += j[0]
+
+				chunk = r"""VB: {<VBZ>*<VBP>?}"""
+				cp = nltk.RegexpParser(chunk)
+				word = nltk.word_tokenize(t[0])
+				tagged = nltk.pos_tag(word)
+				ch = cp.parse(tagged)
+				flg = 0
+				for subtree in ch.subtrees():
+					if subtree.label() == 'VB':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+							flg = 1
+						break
+				if flg == 0:
+					final += " is"
+
+				chunk = r"""PRP: {<PRP.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(tagged)
+				for subtree in ch.subtrees():
+					if subtree.label() == 'PRP':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+				chunk = r"""PRP: {<JJ.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(tagged)
+				for subtree in ch.subtrees():
+					if subtree.label() == 'PRP':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+				chunk = r"""PRP: {<RB.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(tagged)
+				for subtree in ch.subtrees():
+					if subtree.label() == 'PRP':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+				chunk = r"""PRP: {<VB.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(tagged)
+				for subtree in ch.subtrees():
+					if subtree.label() == 'PRP':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+				chunk = r"""NN: {<NN.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(tagged)
+				for subtree in ch.subtrees():
+					if subtree.label() == 'NN':
+						for j in subtree.leaves():
+							if f == 0:
+								final += " "+j[0]
+								f = 1
+							else:
+								final += " of "+j[0]
+				f = 0
+				print final
+				final_string = grammar(final)
+				print final_string
+				ws.send(final_string.upper())
+				return
+	chunkGram = r"""NN:{<PRP.?>*<NN.?>?}"""
+	chunkParser = nltk.RegexpParser(chunkGram)
+	chunked = chunkParser.parse(tagged)
+	for subtree in chunked.subtrees():
+		if subtree.label() == 'NN':
+			for j in subtree.leaves():
+				f = 0
+				w = nltk.word_tokenize(string)
+				w.remove(j[0])
+				final = ""
+				final += " "+j[0]
+				chunk = r"""VB: {<VBP>*<VBZ>*<VB>*<VB.?>*<MD.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				word = nltk.word_tokenize(t[0])
+				tagged = nltk.pos_tag(word)
+				ch = cp.parse(tagged)
+				flg = 0
+				for subtree in ch.subtrees():
+					if subtree.label() == 'VB':
+						for j in subtree.leaves():
+							w.remove(j[0])
+							final += " "+j[0]
+							flg = 1
+						break
+				if flg == 0:
+					final += " is"
+				chunk = r"""PRP: {<PRP.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+
+				ch = cp.parse(nltk.pos_tag(w))
+				for subtree in ch.subtrees():
+					if subtree.label() == 'PRP':
+						for j in subtree.leaves():
+							final += " "+j[0]
+
+							w.remove(j[0])
+				chunk = r"""NN: {<NN.?>?}"""
+				cp = nltk.RegexpParser(chunk)
+				ch = cp.parse(nltk.pos_tag(w))
+				for subtree in ch.subtrees():
+					if subtree.label() == 'NN':
+						for j in subtree.leaves():
+							if f == 0:
+								final += " "+j[0]
+								f = 1
+							else:
+								final += " of "+j[0]
+							w.remove(j[0])
+				f = 0
+				for wrd in w:
+					final += " "+wrd
+				print final
+				final_string = grammar(final)
+				print final_string
+				ws.send(final_string.upper())
+				return
+
+
+
+				
 def main():
 	vakya = ""
 	l = listener()
@@ -163,152 +373,17 @@ def main():
 					max_cnt = max(result)
 					max_index = result.index(max_cnt)
 					print wordss[max_index].word
-					vakya += wordss[max_index].word
+					vakya += " "+wordss[max_index].word
 					print "whole sentance: ",vakya
 					break
 		elif what == 'c':
 			vakya = ""
 			print "whole sentance is now cleared"
 		elif what == 's':
-			string = copy.deepcopy(vakya)
+			natural_sentence(copy.deepcopy(vakya))
 			vakya = ""
-			pst = PunktSentenceTokenizer(string)
-			t = pst.tokenize(string)
 			
-			word = nltk.word_tokenize(t[0])
-			tagged = nltk.pos_tag(word)
-			print tagged
-			chunkGram = r"""WRB:{<WRB.?>*<WP>*<WDT>?}"""
-			chunkParser = nltk.RegexpParser(chunkGram)
-			chunked = chunkParser.parse(tagged)
-			for subtree in chunked.subtrees():
-				if subtree.label() == 'WRB':
-					for j in subtree.leaves():
-						f = 0
-						final = ""
-						final += j[0]
-
-						chunk = r"""VB: {<VBZ>*<VBP>?}"""
-						cp = nltk.RegexpParser(chunk)
-						word = nltk.word_tokenize(t[0])
-						tagged = nltk.pos_tag(word)
-						ch = cp.parse(tagged)
-						flg = 0
-						for subtree in ch.subtrees():
-							if subtree.label() == 'VB':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-									flg = 1
-								break
-						if flg == 0:
-							final += " is"
-
-						chunk = r"""PRP: {<PRP.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(tagged)
-						for subtree in ch.subtrees():
-							if subtree.label() == 'PRP':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-						chunk = r"""PRP: {<JJ.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(tagged)
-						for subtree in ch.subtrees():
-							if subtree.label() == 'PRP':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-						chunk = r"""PRP: {<RB.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(tagged)
-						for subtree in ch.subtrees():
-							if subtree.label() == 'PRP':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-						chunk = r"""PRP: {<VB.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(tagged)
-						for subtree in ch.subtrees():
-							if subtree.label() == 'PRP':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-						chunk = r"""NN: {<NN.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(tagged)
-						for subtree in ch.subtrees():
-							if subtree.label() == 'NN':
-								for j in subtree.leaves():
-									if f == 0:
-										final += " "+j[0]
-										f = 1
-									else:
-										final += " of "+j[0]
-						f = 0
-						print final
-						final_string = self.grammar(final)
-						print final_string
-						ws.send(final_string.upper())
-						return
-			chunkGram = r"""NN:{<PRP.?>*<NN.?>?}"""
-			chunkParser = nltk.RegexpParser(chunkGram)
-			chunked = chunkParser.parse(tagged)
-			for subtree in chunked.subtrees():
-				if subtree.label() == 'NN':
-					for j in subtree.leaves():
-						f = 0
-						w = nltk.word_tokenize(string)
-						w.remove(j[0])
-						final = ""
-						final += " "+j[0]
-						chunk = r"""VB: {<VBP>*<VBZ>*<VB>*<VB.?>*<MD.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						word = nltk.word_tokenize(t[0])
-						tagged = nltk.pos_tag(word)
-						ch = cp.parse(tagged)
-						flg = 0
-						for subtree in ch.subtrees():
-							if subtree.label() == 'VB':
-								for j in subtree.leaves():
-									w.remove(j[0])
-									final += " "+j[0]
-									flg = 1
-								break
-						if flg == 0:
-							final += " is"
-						chunk = r"""PRP: {<PRP.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-
-						ch = cp.parse(nltk.pos_tag(w))
-						for subtree in ch.subtrees():
-							if subtree.label() == 'PRP':
-								for j in subtree.leaves():
-									final += " "+j[0]
-
-									w.remove(j[0])
-						chunk = r"""NN: {<NN.?>?}"""
-						cp = nltk.RegexpParser(chunk)
-						ch = cp.parse(nltk.pos_tag(w))
-						for subtree in ch.subtrees():
-							if subtree.label() == 'NN':
-								for j in subtree.leaves():
-									if f == 0:
-										final += " "+j[0]
-										f = 1
-									else:
-										final += " of "+j[0]
-									w.remove(j[0])
-						f = 0
-						for wrd in w:
-							final += " "+wrd
-						print final
-						final_string = self.grammar(final)
-						print final_string
-						ws.send(final_string.upper())
-						return
+						
 		
 				
 				

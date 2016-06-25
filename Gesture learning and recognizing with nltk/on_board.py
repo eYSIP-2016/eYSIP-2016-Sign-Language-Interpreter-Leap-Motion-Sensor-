@@ -16,26 +16,44 @@ track_hex = bytearray([0x7E,0xFF,0x06,0x03,0x00,0x00,0xFF,0xFF,0xFF,0xEF])
 class WSHandler(tornado.websocket.WebSocketHandler):
 
     map_with_filename = [
-            ('I FEEL SLEEP', '9'),
-            ('WHAT IS THIS', '16'),
-            ('THE INTERNET IS NOT WORKING', '15'),
-            ('ALL DONE', '1'),
-            ('SORRY', '19'),
-            ('I LIKE YOU', '10'),
-            ("I DIDN'T UNDERSTAND WHAT YOU SAID", '8'),
-            ('WHAT TO DO NEXT', '18'),
-            ('GOODBYE, HAVE A NICE DAY', '2'),
-            ('WHAT IS YOUR NAME', '17'),
-            ('THANK YOU','14'),
-            ('I AM HUNGRY', '5'),
-            ('PLEASE, TURN ON THE LIGHT', '13'),
-            ('I AM TRUSTY, I WANT WATER', '7'),
-            ('I AM BUSY', '4'),
-            ("IT'S VERY GOOD", '11'),
-            ('HOW ARE YOU', '3'),
-            ('I AM SO HAPPY', '6'),
-            ('PLEASE, TURN ON THE FAN', '12'),
-            ('HELLO', '20')
+			('THANK YOU','14'),
+            ('HELLO', '20'),
+            ('EAT','21'),
+            ('COME','22'),
+            ('GIRL','23'),
+            ('HOME','24'),
+            ('ASK','25'),
+            ('MOTHER','26'),
+            ('KNOW','27'),
+            ('HOW','28'),
+            ('DRIVE','29'),
+            ('FATHER','30'),
+            ('DRINK','31'),
+            ('MY','32'),
+            ('GIVE','33'),
+            ('HELP','34'),
+            ('GOOD','35'),
+            ('BOY','36'),
+            ('WAIT','37'),
+            ('WHY','38'),
+            ('WHERE','39'),
+            ('YES','40'),
+            ('SCHOOL','41'),
+            ('WHICH','42'),
+            ('SEE','43'),
+            ('WATER','45'),
+            ('TIME','46'),
+            ('WHAT','47'),
+            ('PLEASE','48'),
+            ('WHO','49'),
+            ('NO','50'),
+            ('NAME','51'),
+            ('PLAY','52'),
+            ('TOILET','53'),
+            ('YOU','44'),
+            ('ARE','54'),
+            ('IS','55'),
+            ('YOUR','56')
          ]
                                                                                                                                                                                             
     play_from_sdcard = bytearray([0x7E,0xFF,0x06,0x09,0x00,0x00,0x02,0xFE,0xF0,0xEF])
@@ -50,22 +68,23 @@ class WSHandler(tornado.websocket.WebSocketHandler):
        #self.play_file(2)
 
     def on_message(self, message):
-		if message == "#123#":
-			WSHandler.flg = 1
-		elif WSHandler.flg == 1:
-			WSHandler.flg = 0
-			for i in WSHandler.map_with_filename:
-				if(i[0] == message):
-					self.play_file(int(i[1]))
-					break;
-		else:
-			words = message.split(' ')
+        print message
+        if message == "#123#":
+            WSHandler.flg = 1
+        elif WSHandler.flg == 1:
+            WSHandler.flg = 0
+            for i in WSHandler.map_with_filename:
+                if(i[0] == message):
+                    self.play_file(int(i[1]))
+                    break;
+        else:
+            words = message.split(' ')
             for i in words:
                 for j in WSHandler.map_with_filename:
                     if(j[0] == i):
                         self.play_file(int(j[1]))
                         break
-                time.sleep(.15)
+                time.sleep(.4)
         
 
 
@@ -109,7 +128,7 @@ application = tornado.web.Application([
 ])
 
 if __name__ == "__main__":
-    application.listen(9090)
+    application.listen(1234)
     tornado.ioloop.IOLoop.instance().start()
     try:
         sys.stdin.readline()
