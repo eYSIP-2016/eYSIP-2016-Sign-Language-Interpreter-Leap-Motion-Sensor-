@@ -51,7 +51,7 @@
 	\newpage
 	\tableofcontents
 	\newpage
-	\section{\textbf{\Huge{Tutorial Name:}}}
+	\section{Tutorial Name:}
 	\begin{center}\huge{Sign language Interpreter}\\\Large{Using Leap Motion Sensor}\end{center}
 	\vspace{15mm}
 	\textbf{\Large{Objective:}}\\
@@ -62,7 +62,7 @@
 	\vspace{1mm}\\
 	Here we are using leap sensor for detecting gesture and then we will convert in audio with mp3 module
 	\newpage
-	\section{\textbf{\Huge{Prerequisites:}}}
+	\section{Prerequisites:}
 	\vspace{1cm}
 	\tab Before going ahead it is better to learn these basic things
     \vspace{1cm}
@@ -74,7 +74,7 @@
 	    \item Basic Electronics knowledge
 	\end{itemize}
 	\newpage
-	\section{\textbf{\Huge{Requirement}}}
+	\section{Requirement}
 	\vspace{1cm}
 	\begin{itemize}
 	    \item Hardware Requirement:
@@ -100,7 +100,7 @@
 	    \end{itemize}
 	\end{itemize}
 	\newpage
-	\section{\textbf{\Huge{Theory and Description}}}
+	\section{Theory and Description}
 	\vspace{1cm} \tab{This much things you must learn before starting this project:}
 	\begin{itemize}
 	    \begin{itemize}
@@ -380,7 +380,7 @@ trainer.on('training-started', function(movementName) {
 	\vspace{.3cm}\\
 	\textbf{Step 2:}\\
 	Download this software from this location,\\
-\url{http://download.softpedia.com/dl/d5a643aad00816ee735372c2d530a1a2/57584b56/100173006/software/cd_dvd_tools/Win32DiskImager-0.9.5-binary.zip}\\
+ http://download.softpedia.com/dl/d5a643aad00816ee735372c2d530a1a2/57584b56/100173006/software/cd_dvd_tools/Win32DiskImager-0.9.5-binary.zip}\\
 this will be helpful for writing an image in sd card.\\
 \vspace{.3cm}\\
 \includegraphics[width=\linewidth]{1.png}
@@ -434,35 +434,169 @@ Your board is ready! :?)
 	\tab{MP3 module is used to play audio files stored in separate memory card attached with module. Control of this module is done the hex code sent from any controller via UART port. Here we will send code from Galileo board from Rx Tx pin to the board, there are some specified method to generating hex code which you can find on it's data sheet. We will se about that in next topic}
 	\newpage
 
-	\section{\textbf{\Huge{Implementation:}}}
+	\section{Implementation:}
 	\vspace{1cm}
 	\begin{itemize}
 	    \item Alphabet training and recognizing with leap motion
-	    \item Basic structure of system
-	    \item Sending and saving data generated through LeapTrainer.js to Galileo board
-	    \item Changes in Interface of LeapTrainer
 	    \item Make natural sentence from words using NLTK
 	    \item Make simple player for MP3 module
-	    \item Link main project with MP3 module
+	    \item Other Experiment for gesture recognizing.
+	    \item First version of this system with LeapTrainer.js
+	    \item second and final version of this system
 	\end{itemize}
 	\vspace{2cm}
 	\textbf{\huge{Alphabet training and recognizing with leap motion:}}
 	\vspace{1cm}\\
-	\tab{Here we want to make a programme which records or say learns pose hand and then it will recognize. Means there will be two mode learning and recognizing. In Learning mode we need to perform pose so this pose will be saved for future reference and need to provide one alphabet for that pose. and In recognizing mode we need to perform specific pose so programe will recognize that pose and give related alphabet}\\
-	\tab{Here we have used pointables x direction, pointable z diirection, pointable x stabilized tip position, pointable z stabilized tip position, stabilized palm position of x axis and z axis.}\\
+	\tab{Here we want to make a programme which records or say learns pose hand and then it will recognize. Means there will be two mode learning and recognizing. In Learning mode we need to perform pose so this pose will be saved for future reference and need to provide one alphabet for that pose. and In recognizing mode we need to perform specific pose so programme will recognize that pose and give related alphabet}\\
+	\tab{Here we have used pointables x direction, pointable z direction, pointable x stabilized tip position, pointable z stabilized tip position, stabilized palm position of x axis and z axis.}\\
 	\tab{Here we want to implement a programme which is independent of hand's position means we can perform action at any position in range of sensor.  so we have take data relative palm center so we have used stabilized palm position but here only x and z axis is useful because we don't need to care about height from sensor.}\\
 	\tab{Here we will find radius distance from palm center to every tip of  finger  so we need to find mean position of tip's x and z co-ordinates related to palm center}\\
 	\tab{We are also taking direction vectored so we can increase range of detection of radius distance}\\
-	\tab{Then sum interface related programming. whole programme is in python language you caan find at github \url{https://github.com/sanketbhimani/eYSIP-2016-Sign-Language-Interpreter-Leap-Motion-Sensor-/blob/master/alphabet_using_leap.py}}\\
+	\tab{Then sum interface related programming. whole programme is in python language you can find at github \url{https://github.com/sanketbhimani/eYSIP-2016-Sign-Language-Interpreter-Leap-Motion-Sensor-/blob/master/alphabet_using_leap.py}}\\
 	\vspace{.5cm}\\
 	\textbf{Silly mistake I made and also solve!}\\
 	\tab{While copping object I was directly write like a = b. so programme was not working properly and only large performed pose goes to every object. I was not understanding what was happening. what was happening, when I write a = b it just transfer a pointer no new memory is allocated so when I change value for one object all values will change because they all are pointing to same memory location. then i used a = copy.deepcopy(b) then it will allocate new memory for that object. and it is working fine!!!}
 	\newpage
-	\section{Exercise}
-	$<$ Give few sample experiment for practice. Include quiz or questions(as required).$>$
+	\vspace{2cm}
+	\textbf{\huge{Make natural sentence from words}}\\\vspace{.1cm}\\\textbf{\huge{using NLTK:}}
+	\vspace{1cm}\\
+	\tab{In sign language, normally whole sentence is not actioned mean little grammar thing like "is" are not much important. because action just want to show the understanding about what he want to tell. they not try to build a complete sentence with correct grammar.}\\
+    \tab{So, this programme will help to create a proper natural sentence with correct grammar. like if you do input like "WHAT NAME YOU", means you want to ask a name someone this should be like "WHAT IS YOU NAME?" so this type of conversation is done by this programme}\\
+    \tab{For that I have use NLTK library, NLTK have lot of data to compare and detect what is this word means this is verb, pronoun, noun etc. Let take one example, "make a note" here note is noun but "note it down" here note is verb so for different cases same word can perform different role, so NLTK helps you to detect the role of words, it also helps you to organize sentence and word at smart way.}\\
+    \tab{After detecting the role of this words, it's our job to make a proper sentence. This programme will put them in proper sequence and add necessary words like "is". then it will correct this sentence grammar. like if the input is like "WHAT NAME YOU" our programme generate new sentence like "WHAT IS YOU NAME" then after correcting grammar this will be like "WHAT IS YOUR NAME?" For correcting grammar I have use online API, it's ginger grammar. So you need to just send raw sentence and as a res ponce you will get proper correct sentence with some extra information as a JSON data you need to fetch correct sentence.}
+    \tab{So you need to learn basic NLTK library and sending and receiving HTTP request and response using python.}
+    \newpage
+	\vspace{2cm}
+	\textbf{\huge{Make simple player for MP3 module:}}
+	\vspace{1cm}\\
+	\tab{This is a simple programme designed to test and get learn an interfacing with MP3 module. This programme is basically mp3 player which have option of next, previous, play/pause, volume up and volume down.}\\
+	\tab{This programme is in command line interface. And it generates appropriate hex code for perform certain task and send it to mp3 module through UART (Rx and Tx pin available on board). This includes of generating oh check bits and all.}
 	\newpage
+	\textbf{\huge{Other Experiment for Gesture recognizing:}}
+	\vspace{1cm}\\
+	\tab{Now, we need to do gesture recognizing. means in first alphabet recognising programme we have just recognize just pose but now we need to recognize whole motion. For that i was searching for works done on this topic. From leap developer community I found two useful repository first one is \$1 unistock gesture recognizing library. If know about \$1 and \$n algorithm of university of Sweden. This algorithm compares two pattern and gives percentages matches. So what i found that some one have made like using only one pointable we need to perform action and system will recognize that action. but here we can not use standard sign language because here only liner actions can be performed. And it with too much errors. Means it does mistakes so much while recognizing.}\\
+	\tab{So, finally i decided to not to use this system. So I search another library named LeapTrainer.js. It was good and i start working on it.}\\
+	\newpage
+
+	\textbf{\huge{First version of this system with LeapTrainer.js:}}
+	\vspace{1cm}\\
+	\tab{This is based on web  pages meas whole system was web based. it runs as website. So gesture training and recognising happens on browser. Means, here we need to train the system first (Loading of gesture data), Then system will recognize that gestures. But problem was that after loading data when we reload the page or reopen the page  saved data ware destroyed. meas the data are not being permanently stored so we need to make some system for permanent saving of data.}\\
+	\tab{As explined in theory there is a listener function for each events. So, when gesture-created event generated i store data of gestures in form of JSON using toJSON method. and in starting (means when we open the page) I load all gestures from JSON file. But here we want to make our system fully portable so JSON file is on Galileo board so the transfer of data is through Websocket. On board there is one python programme running which will create websocket server and our webpage be a websocket client. And all website data is also on board. we are just opening site from board to our laptop's browser. Here we need to connect Leap Motion Sensor on laptop side.}\\
+	\vspace{1cm}\\
+	\includegraphics[width=\linewidth]{7.png}
+	\newpage
+	\tab{But here we also use that NLTK programme to convert sentence in natural language with correct grammar so we need to first pass the output of this web application to this programme. Now, this programme requires more processing power so it can not be run on Galileo board so we need to run it on laptop so we will pass the output to python script running on y laptop and then it sent to Galileo board. here also communication will be done through websocket.}\\
+	\vspace{1cm}\\
+	\includegraphics[width=\linewidth]{8.png}
+	\tab{There is also some problem like they made mistake many time to recognising gesture and its interface is also quite annoying. So we need to think something new.}
+	\newpage
+	
+	\textbf{\huge{second and final version of this}}\\\textbf{\huge{system:}}
+	\vspace{1cm}\\
+	\tab{Now, I have tried everything available on Internet related gesture recognising but nothing was efficient. So, I have decided to make my own programme to recognising gestures. And worked! So I've create my own algorithm to recognising gestures. It's very similar to the programme of alphabet recognition.If you remember in that programme we are taking average of 300 frames and we are using that average value for future comparison so what was happening that small movement  while recording frames are gone by taking average  but now in this case we want to capture the movements so we can not average. But we can directly compare that much frame to that much frame. So if sufficient frame will match, then we can say that, this is that gesture.}\\
+	\tab{whole programme interface is command-line. There will be two mode of programme, Train and Recognize. So, in train mode we need to perform gesture so system will remember as a future reference. And in recognize mode we need to perform this gesture and system will recognize that gesture and give word matched with it.}\\
+	\tab{Here, in each mode there is a timer of 3 second so you can set a proper position and check whether your each hand is detected properly or not. So, capturing of frame will start after 3 second.
+	For changing of options and all thing see programme on github. There is well commented code so you can change every option like change the timer second or say change no of frame captures.}\\
+	\tab{Here, NLTK programme also merged with main programme so output is directly sent to board and from board to MP3 module, Here all gesture's data will be in laptop. And the communication with board and laptop will be through websocket.}\\
+	\tab{Here whole system is in python. there is two programme one for server and one for client.}\\
+	\begin{itemize}
+        \item Task performed by client side programme:
+        	\begin{itemize}
+        	    \item Recognizing and Training of gesture.
+        	    \item Storing and Loading data to and from JSON file stored on  same laptop/pc.
+        	    \item Add necessary words and Correcting the position of words.
+        	    \item Correcting the grammar.
+        	    \item Sending sentence to board through websocket.
+    	    \end{itemize}
+    	\newpage
+        \item Task performed by server side programme:
+            \begin{itemize}
+                \item Receiving sentence sent from client side programme.
+                \item Davide it into each word and find file name for that word in MP3 module
+                \item And play appropriate file stored in mp3 module through sending proper hex code.
+            \end{itemize}
+	\end{itemize}
+	\vspace{1cm}
+	\includegraphics[width=\linewidth]{9.png}
+	\newpage
+	\section{Exercise}
+	\textbf{\huge{Finding Error rate for Alphabet\\recognising programme}}
+	\vspace{1cm}\\
+	Here is the result of experiments:
+	\begin{center}
+    \begin{itemize}
+        \item "Yes" means recognise
+        \item "No" means not recognise
+    \end{itemize}
+	\vspace{1cm}
+    \begin{tabular}{c|c|c|c|c|c|c|c|c|c}
+    \hline
+         A& &yes&yes&yes&yes&yes&yes&yes&yes\\ 
+         B& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         C& &yes&no&no&yes&yes&yes&yes&yes\\
+         D& &no&yes&yes&yes&yes&yes&yes&yes\\
+         E& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         F& &no&yes&yes&yes&no&yes&yes&yes\\
+         G& &no&no&yes&yes&yes&yes&yes&yes\\
+         H& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         I& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         J& &no&yes&yes&yes&yes&yes&yes&no\\
+         K& &yes&yes&yes&yes&no&yes&yes&yes\\
+         L& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         M& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         N& &no&yes&yes&no&no&yes&yes&yes\\
+         O& &yes&yes&no&yes&yes&yes&yes&yes\\
+         P& &yes&no&yes&yes&yes&yes&yes&yes\\
+         Q& &yes&yes&yes&yes&yes&yes&no&yes\\
+         R& &no&yes&no&yes&no&no&no&yes\\
+         S& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         T& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         U& &yes&no&yes&yes&yes&yes&yes&yes\\
+         V& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         W& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         X& &yes&yes&yes&yes&yes&yes&yes&yes\\
+         Z& &no&yes&yes&yes&yes&yes&yes&yes\\
+         
+    \hline
+    \end{tabular}
+    \end{center}
+    \vspace{.3cm}
+	total: 26*8 =  208\\
+	Incorrect recognition: 23\\
+	So rate is: 23/208 = 0.11057    :)
 	\section{References}
-	$<$ Mention all references, books, articles or links required to understand the topic.$>$
+    \begin{itemize}
+        \item For learning python:  www.tutorialspoint.com/python/
+        \item For Various doubt solution:  www.stackoverflow.com/questions/tagged/python/
+        \item For understanding leap library in python: www.developer.leapmotion.com/documentation/python/index.html
+        \item For javascript gesture recognizing and learning system:  www.github.com/roboleary/LeapTrainer.js
+        \item For \$1 algorithm with Leap motion sensor:  https://github.com/liangzan/leap-demo
+        \item  http://depts.washington.edu/aimgroup/proj/dollar
+        \item  www.developer.leapmotion.com/libraries
+        \item  www.stackoverflow.com/questions/tagged/javascript
+        \item  www.stackoverflow.com/questions/tagged/jquery
+        \item  www.t4t5.github.io/sweetalert
+        \item  www.github.com/t4t5/sweetalert
+        \item  www.pypi.python.org/pypi/nltk
+        \item  www.nltk.org
+        \item  www.youtube.com/watch?v=FLZvOKSCkxY
+        \item  www.gingersoftware.com/grammarcheck
+        \item  www.github.com/zoncoen/python-ginger
+        \item  www.blog.livedoor.jp/xaicron/archives/54466736.html
+        \item  www.youtube.com/watch?v=gN3CGhFPF1s
+        \item  www.github.com/tornadoweb/tornado
+        \item  www.pypi.python.org/pypi/tornado
+        \item  www.gist.github.com/billroy/3761495
+        \item  www.stackoverflow.com/questions/2835559/parsing-values-from-a-json-file-in-python/
+        \item  www.stackoverflow.com/questions/29430333/simultaneously-reading-and-writing-to-json-file-in-python
+        \item  www.downloadmirror.intel.com/26028/eng/iot-devkit-prof-dev-image-galileo-20160525.zip
+        \item  www.software.intel.com/en-us/iot/hardware/galileo/downloads
+        \item  www.downloadmirror.intel.com/25384/eng/w\_galileo\_2015.0.010.exe
+        \item  www.youtube.com/watch?v=yrRMomesBKM
+        \item  https://github.com/intel-iot-devkit/mraa
+
+
+    \end{itemize}
 	
 \end{document}
 
