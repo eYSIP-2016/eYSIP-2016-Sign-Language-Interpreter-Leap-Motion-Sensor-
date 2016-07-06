@@ -21,28 +21,31 @@ import urlparse
 from urllib2 import HTTPError
 from urllib2 import URLError
 from getch import getch, pause
-
+import numpy as np
 websocket.enableTrace(True)
-ws = websocket.create_connection("ws://169.254.6.158:1234")
+#ws = websocket.create_connection("ws://169.254.6.158:1234")
 
 
+
+class NumPyArangeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist() # or map(int, obj)
+        return json.JSONEncoder.default(self, obj)
 
 
 class listener(Leap.Listener):
-	sample = 120
+	sample = 300
 	enable = 0
 	main_enable = 0
 	count = 0
 	no_of_hand = 0
 	data = []
-	for l in xrange(sample):							#no of frame
-		data.append([])
-		for i in xrange(2):							#no of hand
-			data[l].append([])
-			for j in xrange(5):						#no of fingre
-				data[l][i].append([])
-				for k in xrange(2):					#no of perameter direction and position
-					data[l][i][j].append([])
+	data_dir = []
+	data_pos = []
+	
+					
+					
 	def on_frame(self, ctrl):
 		if listener.enable == 1:
 			frm = ctrl.frame()
@@ -50,27 +53,44 @@ class listener(Leap.Listener):
 			hand_1 = frm.hands[1]
 			pntbls = hand.pointables
 			pntbls_1 = hand_1.pointables
+			fing_data_pos = []
+			fing_data_dir = []
+			
 			for i in xrange(5):
-				listener.data[listener.count][0][i][0] = float("%.3f" % (math.sqrt((pntbls[i].direction[0]) ** 2 + (pntbls[i].direction[2]) ** 2)))
-				listener.data[listener.count][0][i][1] = float("%.3f" % (math.sqrt((pntbls[i].stabilized_tip_position[0]-hand.stabilized_palm_position[0]) ** 2 + (pntbls[i].stabilized_tip_position[2]-hand.stabilized_palm_position[2]) ** 2)))
-				if len(frm.hands) == 2:
-					listener.data[listener.count][1][i][0] = float("%.3f" % (math.sqrt((pntbls_1[i].direction[0]) ** 2 + (pntbls_1[i].direction[2]) ** 2)))
-					listener.data[listener.count][1][i][1] = float("%.3f" % (math.sqrt((pntbls_1[i].stabilized_tip_position[0]-hand_1.stabilized_palm_position[0]) ** 2 + (pntbls_1[i].stabilized_tip_position[2]-hand_1.stabilized_palm_position[2]) ** 2)))
+				a1 = float("%.2f" % (math.sqrt((pntbls[i].direction[0]) ** 2 + (pntbls[i].direction[2]) ** 2)))
+				a2 = int(math.sqrt((pntbls[i].stabilized_tip_position[0]-hand.stabilized_palm_position[0]) ** 2 + (pntbls[i].stabilized_tip_position[2]-hand.stabilized_palm_position[2]) ** 2))
+				fing_data_pos.append(a2)
+				fing_data_dir.append(a1)
+			if len(frm.hands) == 2:
+				for i in xrange(5):
+					a1 = float("%.2f" % (math.sqrt((pntbls_1[i].direction[0]) ** 2 + (pntbls_1[i].direction[2]) ** 2)))
+					a2 = int((math.sqrt((pntbls_1[i].stabilized_tip_position[0]-hand_1.stabilized_palm_position[0]) ** 2 + (pntbls_1[i].stabilized_tip_position[2]-hand_1.stabilized_palm_position[2]) ** 2)))
+					fing_data_pos.append(a2)
+					fing_data_dir.append(a1)
+			listener.data_dir.append(np.array(fing_data_dir).flatten())
+			listener.data_pos.append(np.array(fing_data_pos).flatten())
+			
+					
+			
 			if len(frm.hands) == 2:
 				listener.no_of_hand = 2
 			else:
 				listener.no_of_hand = 1
 			listener.count += 1
 			if listener.count == listener.sample:
+				listener.data.append(listener.data_dir)
+				listener.data.append(listener.data_pos)
+				listener.data_dir = []
+				listener.data_pos = []
+				
 				listener.count = 0
 				listener.enable = 0
 				listener.main_enable = 1
+			
 				
 
 
 class words:
-	POSITION_RANGE = 18
-	DIRECTION_RANGE = .18
 	word = ""
 	data = []
 	no_of_hand = 0
@@ -81,32 +101,26 @@ class words:
 		self.data = data
 		self.no_of_hand = no_of_hand
 	def to_JSON(self):
-		return json.dumps(self.__dict__)	
+		return json.dumps(self.__dict__, cls=NumPyArangeEncoder)
 	def is_this(self,d,n):
-		cnt = 0
-		if n == 1 and self.no_of_hand == 1:
-			for i in xrange(120):
-				for j in xrange(120):
-					count = 0
-					for k  in xrange(5):
-						if (d[j][0][k][0]<self.data[i][0][k][0]+ words.DIRECTION_RANGE and d[j][0][k][0]>self.data[i][0][k][0]-words.DIRECTION_RANGE) and (d[j][0][k][1]<self.data[i][0][k][1]+words.POSITION_RANGE and d[j][0][k][1]>self.data[i][0][k][1]-words.POSITION_RANGE):
-							count += 1
-					if count == 5:
-						cnt += 1
-			print '"',self.word,'"',float((cnt*100)/(120*120)),"%",'(',cnt,')'
-			return cnt
-		elif n == 2 and self.no_of_hand == 2:
+		
+	
+		
+		if (n == self.no_of_hand):
 			
-			for i in xrange(120):
-				for j in xrange(120):
-					count = 0
-					for k  in xrange(5):
-						if (d[j][0][k][0] < (self.data[i][0][k][0]+words.DIRECTION_RANGE) and d[j][0][k][0] > (self.data[i][0][k][0]-words.DIRECTION_RANGE)) and (d[j][0][k][1] < (self.data[i][0][k][1]+words.POSITION_RANGE) and d[j][0][k][1] > (self.data[i][0][k][1]-words.POSITION_RANGE)) and (d[j][1][k][0] < (self.data[i][1][k][0]+words.DIRECTION_RANGE) and d[j][1][k][0] > (self.data[i][1][k][0]-words.DIRECTION_RANGE)) and (d[j][1][k][1] < (self.data[i][1][k][1]+words.POSITION_RANGE) and d[j][1][k][1] > (self.data[i][1][k][1]-words.POSITION_RANGE)):
-							count += 1
-					if count == 5:
-						cnt += 1
-			print '"',self.word,'"',float((cnt*100)/(120*120)),"%",'(',cnt,')'
-			return cnt
+			r1 = abs(self.data[0]-d[0])<.18
+			#print abs(self.data[0]-d[0])
+
+			r2 = abs(self.data[1]-d[1])<18
+			#print abs(self.data[1]-d[1])
+			final = r1&r2
+			#print final
+			cnt = len(np.where(final.all(axis=1))[0])
+			
+			
+			print self.word,' ',cnt/(3),"%",cnt
+			return cnt	
+		
 			
 
 				
@@ -256,7 +270,7 @@ def natural_sentence(string):
 				print final
 				final_string = grammar(final)
 				print final_string
-				ws.send(final_string.upper())
+				#ws.send(final_string.upper())
 				return
 	chunkGram = r"""NN:{<PRP.?>*<NN.?>?}"""
 	chunkParser = nltk.RegexpParser(chunkGram)
@@ -312,30 +326,36 @@ def natural_sentence(string):
 				print final
 				final_string = grammar(final)
 				print final_string
-				ws.send(final_string.upper())
+				#ws.send(final_string.upper())
 				return
 
 
 
 				
 def main():
-	vakya = ""
+
+	flg = 0
+	vakya = "what name you"
 	l = listener()
 	c = Leap.Controller()
 	c.add_listener(l)
 	os.system('cls')
 	wordss = []
 	
-	with open('a.json', 'r') as f:
+	with open('data.json', 'r') as f:
 		json_data = json.load(f)
 		f.close()
 	for i in json_data:
 		word = words(**json.loads(json_data[i]))
 		wordss.append(word)
-		print word.word
+		print word.word, np.array(word.data[0]).shape,word.no_of_hand
 	while True:
-		print "training, recognizing, send whole sentance or clear sentance? (t/r/s/c) : "
-		what = getch()
+		if flg == 1:
+			what = 'r'
+			flg = 0
+		else:
+			print "training, recognizing, send whole sentance or clear sentance? (t/r/s/c) : "
+			what = getch()
 		if what == '\x03':
 			exit()
 		if what == 't':
@@ -346,22 +366,23 @@ def main():
 			print "training started"
 			listener.enable = 1
 			while True:
-				if listener.main_enable == 1:
+				if listener.main_enable == 1:			
 					listener.main_enable = 0
 					sentance = raw_input("Enter word or sentance: ")
-					word = words(copy.deepcopy(listener.data), copy.deepcopy(sentance), copy.deepcopy(listener.no_of_hand))
+					word = words(copy.deepcopy(np.array(listener.data)), copy.deepcopy(sentance), copy.deepcopy(listener.no_of_hand))
 					wordss.append(word)
 					json_data = ""
-					with open('a.json', 'r') as f:
+					with open('data.json', 'r') as f:
 						json_data = json.load(f)
 						f.close()
 					json_data[sentance] = word.to_JSON()
-					with open('a.json', 'w') as f:
+					with open('data.json', 'w') as f:
 						json.dump(json_data, f)
 						f.flush()
 						f.close()
 						
-					listener.no_of_hand = 0				
+					listener.no_of_hand = 0	
+					listener.data = []
 					break
 		elif what == 'r':
 			print "recognizing will start after 3 second"
@@ -375,10 +396,9 @@ def main():
 					listener.main_enable = 0
 					result = []
 					for word in wordss:
-						result.append(word.is_this(listener.data, listener.no_of_hand))
+						result.append(word.is_this(np.array(listener.data), listener.no_of_hand))
 					max_cnt = max(result)
-					print "###",max_cnt
-					if max_cnt > 100:
+					if max_cnt > 30:
 						max_index = result.index(max_cnt)
 						listener.no_of_hand = 0
 						print wordss[max_index].word
@@ -386,6 +406,8 @@ def main():
 						print "whole sentance: ",vakya
 					else:
 						print "try again"
+						flg = 1
+					listener.data = []
 					break
 		elif what == 'c':
 			vakya = ""
