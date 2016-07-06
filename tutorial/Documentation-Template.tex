@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	e-Yantra, IIT-Bombay
 
-%	Document Author: Saurav Shandilya
+%	Document Author: Sanket R. Bhimani
 %	Date: 16-August,2012
 %	Last Editted by: Saurav
 %   Date Last updated: 31-05-2016 
@@ -68,7 +68,6 @@
     \vspace{1cm}
 	\begin{itemize}
 	    \item Basic knowledge of Python
-	    \item Basic knowledge of javascript and HTML
 	    \item Basic knowledge of Linux
 	    \item Basic knowledge of NLTK
 	    \item Basic Electronics knowledge
@@ -89,12 +88,10 @@
 	    \vspace{1cm}
 	    \item Software Requirement:
 	    \begin{itemize}
-	        \item Python editor (vi is enough)
+	        \item Python editor
 	        \item Leap sdk
-	        \item LeapTrainer.js
 	        \item NLTK for Python
 	        \item Tornado Web-socket
-	        \item Any web browser
 	        \item Bitwise SSH Client
 	        \item Wireshark(optional)
 	    \end{itemize}
@@ -292,8 +289,8 @@ var trainer = new LeapTrainer.Controller({controller: leapController});
 leapController.connect();
 \end{lstlisting}
 \vspace{1cm}
-\textbf{Training the system:}
-\vspace{.5cm}
+\textbf{Training the system:}\\
+\vspace{.5cm}\\
 \tab{We can train the system by adding new gesture or pose to system, and we can add new gesture or pose by calling this method,}
 \begin{lstlisting}
 trainer.create('Halt');
@@ -318,54 +315,7 @@ trainer.fromJSON(savedData);
 \end{lstlisting}
 This can be used for saving and fetching gesture or pose data into or from file
 \vspace{2cm}
-\textbf{Options:}
-Here are some options for changing the setting of LeapTrainer,
-\begin{itemize}
-    \item \textbf{controller:} An instance of Leap.Controller class from the Leap Motion Javascript API. This will be created with default settings if not passed as an option.
-    \item \textbf{pauseOnWindowBlur:}If this variable is TRUE, then the LeapTrainer Controller will pause when the browser window loses focus, and resume when it regains focus (default: FALSE)
-    \item \textbf{minRecordingVelocity:}The minimum velocity a frame needs to be measured at in order to trigger gesture recording. Frames with a velocity below this speed will cause gesture recording to stop. Frame velocity is measured as the fastest moving hand or fingertip in view (default: 300)
-    \item \textbf{maxRecordingVelocity:}The maximum velocity a frame can measure at and still trigger pose recording, or above which to pose recording will be stopped (default: 30)
-    \item \textbf{minGestureFrames:} The minimum number of frames that can contain a recognizable gesture (default: 5)
-    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
-    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
-    \item \textbf{minPoseFrames:}The minimum number of frames that need to hit as recordable before pose recording is actually triggered. This higher this number, the longer a pose needs to be held in position before recognition will be attempted. (default: 75)
-    \item \textbf{hitThreshold:}The return value of the recognition function above which a gesture is considered recognized. Raise this to make gesture recognition more strict (default: 0.7)
-    \item \textbf{trainingCountdown:}The number of seconds after startTraining is called that training begins. This number of training-countdown events will be emitted. (default: 3)
-    \item \textbf{trainingGestures:}The number of training gestures required to be performed in training mode (default: 1)
-    \item \textbf{convolutionFactor:}The factor by which training samples will be convolved over a gaussian distribution in order to expand the input training data. Set this to zero to disable convolution (default: 0)
-    \item \textbf{downtime:}The number of milliseconds after a gesture is identified before another gesture recording cycle can begin. This is useful, for example, to avoid a 'Swipe Left' gesture firing when a user moves his or her hand quickly back to center directly after performing a 'Swipe Right' (default: 1000)
-\end{itemize}
-\vspace{1cm}
-Options can be passed to the LeapTrainer.Controller constructor like so:
-\vspace{.5cm}
-\begin{lstlisting}
-new LeapTrainer.Controller({minRecordingVelocity: 100, downtime: 100});
-\end{lstlisting}
-\newpage
-\textbf{Events:}
-\vspace{.5cm}\\
-The LeapTrainer controller will emit events to listening components during training and recognition.
-\vspace{.5cm}
-The framework events are:
-\begin{itemize}
-    \item \textbf{gesture-created:} Fired when a new gesture is added to a LeapTrainer controller object - either by a call to the create()function or by importing a saved gesture via the fromJSON() function. Carries two parameters: gestureName andtrainingSkipped. The latter will be true if this gesture was created by a call to the create() function in which the second parameter was true.
-    \item \textbf{training-countdown:} Fired a configurable number of times, once per second, after the startTraining function is called, before the training started event fires and actual training begins
-    \item \textbf{training-started:} Fired when training begins on a gesture - carries a single parameter, gestureName
-    \item \textbf{training-complete:} Fired when training completes on a gesture - carries three parameters, gestureName,trainingGestures, and isPose. The second parameter is the array of encoded gestures recorded during training. The final parameter indicates whether a pose or a gesture has been learned.
-    \item \textbf{training-gesture-saved:}: Fired during training when a new training gesture is recorded - carries two parameters,gestureName, and trainingGestures. The latter is the array of encoded gestures recorded so far during training, the last entry of which will be the gesture just recorded.
-    \item \textbf{started-recording:}Fired when the recordableFrame function returns TRUE and causes gesture recordingFired when the recordableFrame function returns FALSE and recording was active, causing gesture recording to stop
-    \item \textbf{gesture-detected:} Fired when any gesture is detected, regardless of whether it is recognized or not. This event fires before recognition are attempted and carries two parameters, gesture and frameCount. The first is the recorded encoded gesture, the second is the number of frames in the gesture.
-    \item \textbf{gesture-recognized:} Fired when a known gesture is recognized - carries two parameters, hit and gestureName. The fit parameter is a value between 0.0 and 1.0 indicating how closely the recognized gesture was matched to the training data, with 1.0 being a 100\% match.
-    \item \textbf{gesture-unknown:} Fired when a gesture is detected that doesn't match any known gesture sufficiently to be considered a match. This event carries two parameters, bestHit and closestGestureName, identifying the closest known gesture.
-\end{itemize}
-\vspace{.5cm}
-These events can be registered as this way,
-\vspace{.5cm}
-\begin{lstlisting}
-trainer.on('training-started', function(movementName) {
-    console.log('Started training ' + movementName);
-});
-\end{lstlisting}
+\tab{More details about LeapTrainer library is can be found on github. But we are not using this library because there is many error. like, it autometically detects gsutures, so when we are going to perform any gestures it will recognize another one before performance. so it become annoying. So, I have decided to make my own gesture rcognizing system we will see about it letter}
 \newpage
 \textbf{\huge{Installation of Linux image in Galileo board:}}
 	\vspace{1cm}\\
@@ -491,7 +441,7 @@ Your board is ready! :?)
 	\tab{There is also some problem like they made mistake many time to recognising gesture and its interface is also quite annoying. So we need to think something new.}
 	\newpage
 	
-	\textbf{\huge{second and final version of this}}\\\textbf{\huge{system:}}
+	\textbf{\huge{second version of this}}\\\textbf{\huge{system:}}
 	\vspace{1cm}\\
 	\tab{Now, I have tried everything available on Internet related gesture recognising but nothing was efficient. So, I have decided to make my own programme to recognising gestures. And worked! So I've create my own algorithm to recognising gestures. It's very similar to the programme of alphabet recognition.If you remember in that programme we are taking average of 300 frames and we are using that average value for future comparison so what was happening that small movement  while recording frames are gone by taking average  but now in this case we want to capture the movements so we can not average. But we can directly compare that much frame to that much frame. So if sufficient frame will match, then we can say that, this is that gesture.}\\
 	\tab{whole programme interface is command-line. There will be two mode of programme, Train and Recognize. So, in train mode we need to perform gesture so system will remember as a future reference. And in recognize mode we need to perform this gesture and system will recognize that gesture and give word matched with it.}\\
@@ -499,6 +449,8 @@ Your board is ready! :?)
 	For changing of options and all thing see programme on github. There is well commented code so you can change every option like change the timer second or say change no of frame captures.}\\
 	\tab{Here, NLTK programme also merged with main programme so output is directly sent to board and from board to MP3 module, Here all gesture's data will be in laptop. And the communication with board and laptop will be through websocket.}\\
 	\tab{Here whole system is in python. there is two programme one for server and one for client.}\\
+	\newpage
+	
 	\begin{itemize}
         \item Task performed by client side programme:
         	\begin{itemize}
@@ -518,7 +470,18 @@ Your board is ready! :?)
 	\end{itemize}
 	\vspace{1cm}
 	\includegraphics[width=\linewidth]{9.png}
+	\tab{Now, there is only one problem need to be solved is speed. yes this system is very slow, because this algorithm  is making 300*300*2*5*2*(number of words loaded) comparisons so, it takes time. one solution for this is to decrease frame captured but it affects on efficiency and accuracy of program so I need to find another solution. }
 	\newpage
+	\textbf{\huge{Improved version of system}}\\
+	\vspace{1cm}\\
+	\tab{To make it faster I've tried many thing like with multi-threading, parallel processing, CUDA or many thing!!! but nothing works or say implemented! like in threading no improvement done because threading do same thing but with more threading so it not use more processing power. it just divide the process and do it in part.}\\
+	\tab{And I tried to implement parallel processing but somehow I couldn't control on main thread so my main program is kept restarting and everything is happening so fast so i couldn't even found what is the error. So now I moved to CUDA. But it here also i failed to control on programme.}\\
+	\tab{Now, i thought that let's do some improvement at normal way! So, I change the representation of data. first i was storing data in 4D list. So, it is becoming slow while changing the pointer from one location to another. So, I changed the representation of data storage to matrix form. So, it become just 2D list. And also I have converted it to numpy array. And also, all comparison I am doing is from numpy library. and it is the most efficient library to do process with matrix. So, finally it works! And now it is running faster. So there is no change in system but little change in calculation that makes my algorithm faster that is now I'm using.}
+
+	
+	
+	
+	
 	\section{Exercise}
 	\textbf{\huge{Finding Error rate for Alphabet\\recognising programme}}
 	\vspace{1cm}\\
@@ -570,8 +533,8 @@ Your board is ready! :?)
         \item For Various doubt solution:  www.stackoverflow.com/questions/tagged/python/
         \item For understanding leap library in python: www.developer.leapmotion.com/documentation/python/index.html
         \item For javascript gesture recognizing and learning system:  www.github.com/roboleary/LeapTrainer.js
-        \item For \$1 algorithm with Leap motion sensor:  https://github.com/liangzan/leap-demo
-        \item  http://depts.washington.edu/aimgroup/proj/dollar
+        \item For \$1 algorithm with Leap motion sensor:  www.github.com/liangzan/leap-demo
+        \item  www.depts.washington.edu/aimgroup/proj/dollar
         \item  www.developer.leapmotion.com/libraries
         \item  www.stackoverflow.com/questions/tagged/javascript
         \item  www.stackoverflow.com/questions/tagged/jquery
@@ -593,8 +556,23 @@ Your board is ready! :?)
         \item  www.software.intel.com/en-us/iot/hardware/galileo/downloads
         \item  www.downloadmirror.intel.com/25384/eng/w\_galileo\_2015.0.010.exe
         \item  www.youtube.com/watch?v=yrRMomesBKM
-        \item  https://github.com/intel-iot-devkit/mraa
-
+        \item  www.github.com/intel-iot-devkit/mraa
+        \item  www.wiki.python.org/moin/ParallelProcessing
+        \item  www.stackoverflow.com/questions/20548628/how-to-do-parallel-programming-in-python
+        \item  http://spartanideas.msu.edu/2014/06/20/an-introduction-to-parallel-programming-using-pythons-multiprocessing-module/
+        \item  https://philipwfowler.github.io/2015-01-13-oxford/intermediate/python/04-multiprocessing.html
+        \item  http://materials.jeremybejarano.com/MPIwithPython/
+        \item  http://scipy.github.io/old-wiki/pages/ParallelProgramming
+        \item  https://wiki.python.org/moin/ParallelProcessing
+        \item  http://stackoverflow.com/questions/20548628/how-to-do-parallel-programming-in-python
+        \item  https://developer.nvidia.com/how-to-cuda-python
+        \item  https://mathema.tician.de/software/pycuda/
+        \item  http://stackoverflow.com/questions/5957554/python-gpu-programming
+        \item  http://stackoverflow.com/questions/20548628/how-to-do-parallel-programming-in-python
+        \item  http://www.numpy.org/
+        \item  https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
+        \item  https://pypi.python.org/pypi/numpy
+        \item  http://docs.scipy.org/doc/numpy/reference/
 
     \end{itemize}
 	
