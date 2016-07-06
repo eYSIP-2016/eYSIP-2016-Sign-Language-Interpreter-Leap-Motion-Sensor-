@@ -103,22 +103,36 @@ class words:
 	def to_JSON(self):
 		return json.dumps(self.__dict__, cls=NumPyArangeEncoder)
 	def is_this(self,d,n):
-		
-	
+		#a = time.time()
+		cnt = 0
 		
 		if (n == self.no_of_hand):
 			
-			r1 = abs(self.data[0]-d[0])<.18
+			d_dir = np.array(d[0])
+			d_pos = np.array(d[1])
+			dd_dir = np.array(self.data[0])
+			dd_pos = np.array(self.data[1])
+			for i in xrange(300):
+				d_pos = np.roll(d_pos, 1, axis=0)
+				d_dir = np.roll(d_dir, 1, axis=0)
+				cnt += len(np.where(((abs(dd_dir-d_dir)<.18)&(abs(dd_pos-d_pos)<18)).all(axis=1))[0])
+				
+					
+			
+			
+			
+			#r1 = abs(self.data[0]-d[0])<.18
 			#print abs(self.data[0]-d[0])
 
-			r2 = abs(self.data[1]-d[1])<18
+			#r2 = abs(self.data[1]-d[1])<18
 			#print abs(self.data[1]-d[1])
-			final = r1&r2
+			#final = r1&r2
 			#print final
-			cnt = len(np.where(final.all(axis=1))[0])
+			#cnt = len(np.where(final.all(axis=1))[0])
 			
 			
-			print self.word,' ',cnt/(3),"%",cnt
+			print self.word,' (',cnt,') ',cnt*100/(300*300),'%'
+			#print time.time()-a
 			return cnt	
 		
 			
@@ -395,10 +409,11 @@ def main():
 				if listener.main_enable == 1:
 					listener.main_enable = 0
 					result = []
+					print "chacking..."
 					for word in wordss:
 						result.append(word.is_this(np.array(listener.data), listener.no_of_hand))
 					max_cnt = max(result)
-					if max_cnt > 30:
+					if max_cnt > 9:
 						max_index = result.index(max_cnt)
 						listener.no_of_hand = 0
 						print wordss[max_index].word
