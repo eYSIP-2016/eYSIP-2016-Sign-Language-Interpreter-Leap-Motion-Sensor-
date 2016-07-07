@@ -355,14 +355,15 @@ def main():
 	c.add_listener(l)
 	os.system('cls')
 	wordss = []
-	
+	count = 1
 	with open('data.json', 'r') as f:
 		json_data = json.load(f)
 		f.close()
 	for i in json_data:
 		word = words(**json.loads(json_data[i]))
 		wordss.append(word)
-		print word.word, np.array(word.data[0]).shape,word.no_of_hand
+		print count,' ',word.word
+		count += 1
 	while True:
 		if flg == 1:
 			what = 'r'
@@ -384,7 +385,24 @@ def main():
 					listener.main_enable = 0
 					sentance = raw_input("Enter word or sentance: ")
 					word = words(copy.deepcopy(np.array(listener.data)), copy.deepcopy(sentance), copy.deepcopy(listener.no_of_hand))
+					
+					result = []
 					wordss.append(word)
+					print "chacking..."
+					for word in wordss:
+						result.append(word.is_this(np.array(listener.data), listener.no_of_hand))
+					max_cnt = max(result)
+					if max_cnt > 9:
+						max_index = result.index(max_cnt)
+						listener.no_of_hand = 0
+						print wordss[max_index].word
+						
+					aaa = getch()
+					
+					if aaa == '\x03':
+						wordss.remove(word)
+						break
+					
 					json_data = ""
 					with open('data.json', 'r') as f:
 						json_data = json.load(f)
@@ -394,7 +412,6 @@ def main():
 						json.dump(json_data, f)
 						f.flush()
 						f.close()
-						
 					listener.no_of_hand = 0	
 					listener.data = []
 					break
