@@ -1,6 +1,18 @@
+
+
+#####################################################################
+#e-ySIP - 2016														#
+#author: Sanket R. Bhimani(B.Tech. 2nd year Computer Engineering)	#
+#June-2016															#
+#####################################################################
+
+
+
+
+
 import os, sys, inspect, thread, time
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
-arch_dir = '../lib/x64' if sys.maxsize > 2**32 else '../lib/x86'
+arch_dir = 'lib/x64' if sys.maxsize > 2**32 else 'lib/x86'
 sys.path.insert(0, os.path.abspath(os.path.join(src_dir, arch_dir)))
 
 import Leap
@@ -42,7 +54,10 @@ class letters:                                                              #let
         self.letter
         self.fing1                                                          #is mean of x & z direction like (x^2 + z^2)^.5
         self.fing2                                                          #is mean of x & z position like (x^2 + z^2)^.5
-
+#param: two frame object
+#return: boolean
+#working: compare frame objects with its own frame objects and returns true or false
+#example: count = word.is_this(data,2)
     def isthis(self,f1,f2):										#this method compares  two pose stored and performed
         cnt =0
         for i in f1:

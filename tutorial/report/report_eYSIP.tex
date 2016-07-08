@@ -90,11 +90,12 @@ contents={\includegraphics{logo}}
 
 \chapter[Project Tag]{Sign Language Interpreter\\Using Leap Motion Sensor}
 \section*{Abstract}
-This project will recognize the gestures performed by hearing impaired or verbally challenged persons and convert it into natural audio. Here set of words are converted into whole sentence using NLTK library. And this words are mapped with pre-recorded audio files stored in MP3 module and this sentence is interpreted in audio through Galileo board and MP3 module.\\
-And another is Robotic Hand followed by real Hand's motion. Here real Hand's motion is captured from Leap Motion Sensor and that data is mapped with servos' angle through Galileo Board Robotic Hand is controlled
+This project will recognize the gestures performed by hearing impaired or verbally challenged persons and convert it into natural audio.Here, a set of words is taken as input and is then converted into a full grammatically correct sentence using NLTK library.\\
+Afterwards, these words in the sentence are mapped with pre-recorded audio file stored in the MP3 module and finally is interpreted through the Galileo Board and is audible via a speaker/headphone.\\
+The other part of the project is a robotic hand that tries to imitate the actions of a person's hand when performed over the Leap Motion Sensor. Here Leap sensor's data is mapped with servos' angle through Galileo Board which controls the robotic hand.
 
 \subsection*{Completion status}
-Both part of project is almost completed. But still, in Sign Language Interpreter, making of compact and portable version  is left. And in Robotic Hand making of power supply is left. Currently it is working on LAB DC power supply
+Both parts of the project are almost completed. However, in Sign Language Interpreter, making of compact and portable version is remaining. In Robotic Hand making of power supply is left. Currently it is working on LAB DC power supply.
 \section{Hardware parts}
 \begin{itemize}
   \item Galileo Board \href[page=5]{./datasheet/intel-galileo.pdf}{Datasheet}, \href{http://www.amazon.in/Intel-GALILEO-Microcontroller-Motherboard-GALILEO1-Y/dp/B00K53CQK4?tag=googinhydr18418-21}{Vendor link} 
@@ -102,7 +103,7 @@ Both part of project is almost completed. But still, in Sign Language Interprete
   \item Leap Motion Sensor \href[page=5]{https://developer.leapmotion.com/documentation/}{Documentation}, \href{http://store-world.leapmotion.com/products/leap-motion-controller}{Vendor link} 
   \item GS-5515MG Servo \href[page=5]{./datasheet/GS-5515MG.pdf}{Datasheet},\href{http://www.goodluckbuy.com/goteck-gs-5515mg-15kg-high-troque-analog-metal-gear-servo-for-rc-models.html}{Vendor link}
   \item Any Speaker
-  \item 3D Printed parts of Robotic Hand(STL files given in GitHUb Repository)
+  \item 3D Printed parts of Robotic Hand(STL files given in GitHub Repository)
   
 \end{itemize}
 
@@ -121,7 +122,7 @@ Both part of project is almost completed. But still, in Sign Language Interprete
 See Figure: 1
 \begin{figure}
   \includegraphics[width=\linewidth]{1.png}
-  \caption{Block diagram for sign language interpreter hardware system}
+  \caption{Block diagram for SIGN LANGUAGE INTERPRETER hardware system}
 \end{figure}
 \subsection*{Step 1}
 Connect Leap Motion Sensor with PC with USB connection
@@ -140,7 +141,7 @@ See Figure: 2
 \subsection*{Step 1}
 Assemble all 3D printed parts of Hand. Refer \href{http://inmoov.fr/hand-and-forarm/}{this}
 \subsection*{Step 2}
-Connect Leap with PC with USB
+Connect Leap Motion Sensor with PC with USB
 \subsection*{Step 3}
 Connect PC with Galileo using LAN or WIFI
 \subsection*{Step 4}
@@ -152,20 +153,22 @@ Provide 5V DC power supply to each servo. Make sure, 700mA current is provided t
 \vspace{.3cm}\\
 \textbf{For Sign Language Interpreter:}\\
 \vspace{.3cm}\\
-There is two programs one for laptop and another for board. One script will be running on board to catch massages sent through PC. And this one will also handle the task related to interfacing with MP3 Module to play any audio file through UART communication. And One script will be running on PC to recognizing Gestures and interpret them in words. And task related to making natural sentence from words and making grammar for set of words will also done by this program. This thing will be done through NLTK library.\\
+There are two programs, one is for PC/Laptop and another is for Galileo Board. One script will be running on board to catch massages sent through PC. This script will also handle all the tasks related to the interfacing of MP3 module to play any audio file via UART communication. And One script will be running on PC to recognizing Gestures and interpret them in words. The second script will be running on PC/Laptop to recognize gestures and interpret them as words.
+The tasks related to making natural sentences (grammatically correct) from words and making grammar are also carried out by this particular script. This thing will be done through NLTK library.\\
 Task Achieved with each program:\\
-\textbf{on\_laptop.py}\\
+\vspace{1cm}\\
+\textbf{\Large{on\_laptop.py}}\\
 \begin{itemize}
-\item Recognizing Gesture:\\
-For Gesture Recognizing two parameters each figures position and direction of all three axis are counted. And also relate them with palm center to make independent of palm position from sensor. And 300 samples are captured and stored in JSON file. And for recognizing new gesture, new captured samples are then compared with that samples of all words. For making this system faster, all data is converted into matrix and all processes are done through numpy. 
-\item Making of sentence:\\
-After Recognizing single words, set of word is generated. Then this set become sentence here. Like, if set is ['What', 'name', 'you'], then here some words are added to make proper sentence and also it corrects the places of word. So, here output or above set is ['what', 'is', 'you', 'name']. Then grammar will be corrected in next module.
-\item Correcting Grammar\\
-Here Grammar of sentence is correct. For that, I have used online API of Ginger grammar. So this will make ['what', 'is', 'you', 'name'] to ['what', 'is', 'your', 'name'].
-\item Sending sentence to board\\
+\item \textbf{Recognizing Gesture:}\\
+For gesture recognition two parameters each figures position and direction of all three axis are counted. And also relate them with palm center to make independent of palm position from sensor. Now program takes 300 frame to record record the gesture and then all data is stored in JSON file as a permanent copy. Now when program is restarted all gesture will be loaded from that JSON file. For recognizing gesture again it will take 300 frame and compare with saved frame. Then in whichever gesture higher frames matched is become  the result. For making this system faster, all data is converted into matrix and all processes are done through numpy. 
+\item \textbf{Making of sentence:}\\
+After Recognizing single words, a set of words is generated. Then this set become sentence here. For example, if set is ['What', 'name', 'you'], then here some words are added to make proper sentence and it also corrects the places of word. So, here the output for above set will be ['what', 'is', 'you', 'name']. Then grammar will be corrected in next module.
+\item \textbf{Correcting Grammar}\\
+Here Grammar of sentence is corrected.. For that, I have used online API of Ginger grammar. So this will make ['what', 'is', 'you', 'name'] to ['what', 'is', 'your', 'name'].
+\item \textbf{Sending sentence to board}\\
 Then this sentence is sent to board through websocket here this code become client and board become server.
 \end{itemize}
-\textbf{on\_board.py}
+\textbf{\Large{on\_board.py}}
 \begin{itemize}
 \item Receiving sentence\\
 Receive the sentence through websocket.
@@ -179,8 +182,8 @@ then this generated hex code is sent to mp3 module through UART.
 \textbf{For Robotic hand:}\\
 \vspace{.3cm}\\
 \textbf{Laptop side program}\\
-Here Leap data is mapped to angle. Here two parameters used one is tip position's y axis and palm center's y axis. and tip position's y axis is relate to palm center. So, it become independent from hand position. and send data of all five angle of each finger to board through websocket
-\textbf{Board side program}
+Here Leap data is mapped to servo angle. Here, two parameters are used, one is \textbf{tip position's y axis} and \textbf{palm center's y axis}. and \textbf{tip position's y axis} is relate to palm center. So, it become independent from hand position. Then Send data of all five angle of each finger to board through websocket\\
+\textbf{Board side program}\\
 It just receive angle and data and generate PWM signal according to that.
 \section{Use and Demo}
 \textbf{For Sign Language Interpreter}\\
@@ -190,9 +193,9 @@ See Figure: 3\\
   \caption{Connection between MP3 module and Galileo}
 \end{figure}
 \textbf{step 1:}\\
-Make all connection with board, mp3 module, leap and pc\\
+Connect board,mp3 module.....as shown in Figure: 3\\
 \textbf{step 2:}\\
-connect board with SSH to pc\\
+Connect board with SSH to pc\\
 \textbf{step 3:}\\
 Enter IP of board in on\_laptop.py\\
 \textbf{step 4:}\\
@@ -201,10 +204,13 @@ run on\_board.py on Galileo board.\\
 run on\_laptop.py on laptop\\
 
 
-For better recognizance seat on chair and put leap on table. And before performing any new gesture show whole palm first.\\
+For better recognition, sit on chair and put leap on table and before performing any new gesture show whole palm first.\\
 \vspace{1cm}\\
 \textbf{For Robotic Hand}\\
+\href{https://youtu.be/T554uLQ0PaI}{Youtube Link} of demonstration video 
+
 See Figure: 4\\
+
 \begin{figure}
   \includegraphics[width=\linewidth]{4.jpg}
   \caption{Connection for robotic hand}
@@ -225,24 +231,25 @@ Now perform pose on leap at least 15CM above the sensor.
 
 \section{Future Work}
 \textbf{For Sign language Recognizing system,}\\
-Make whole system potable and compact like an Tablet. And make it more accurate.\\
+\begin{itemize}
+\item Make whole system portable and compact like a tablet and make it more accurate.
+\item Word dictionary can be reach with all necessary words.
+\end{itemize}
+
 \textbf{For robotic hand,}\\
 Make more joints accessible.
 
 \section{Bug report and Challenges}
 \textbf{Bug report:}\\
-Sometimes, another person's (who have not loaded data) gestures is not recognized.\\
+The gesture of people other than the trainer who trained the system does not produce efficient output.\\
 \textbf{Challenges:}\\
-Initially, Recognizance was not accurate. Error rate was almost 50\%. that was some LeapTrainer.js library. So I've decided to make my own thing. So I made algorithm, Now challenge is to make it faster. Because it was too slow. It take 18-21 seconds to recognize single word. So, I converted all data in form of matrix and all process of I have done is through numpy. so it become more faster, Now it takes only 0.3 second to recognize word.\\
+Initially, Reorganization was not accurate. Error rate was almost 50\%. that was some LeapTrainer.js library. So I've decided to make my own thing. So I made algorithm, Now challenge is to make it faster. Because it was too slow. It take 18-21 seconds to recognize single word. So, I converted all data in form of matrix and so, I could use numpy library. Numpy library complete tasks at most efficient and faster way. So my reorganization become more faster, Now it takes only 0.3 second to recognize word.\\
 In robotic hand there was a problem of power supply because I need 5V with 5A power supply. It was quit hard to build such supply. So, currently I am using LAB DC power supply.
 
 \begin{thebibliography}{li}
 \bibitem{wavelan97}
 Robotic hand STL files,
 {\em http://inmoov.fr/hand-and-forarm/.}
-\bibitem{wavelan97}
-Shubham Gupta (Mentor at E-Yantra LAB),
-{\em data conversion in matrix form and find solution through numpy.}
 \bibitem{wavelan97}
 {\em https://github.com/intel-iot-devkit/mraa/}
 

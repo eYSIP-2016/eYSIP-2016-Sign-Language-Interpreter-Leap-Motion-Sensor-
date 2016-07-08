@@ -1,3 +1,13 @@
+
+
+#####################################################################
+#e-ySIP - 2016														#
+#author: Sanket R. Bhimani(B.Tech. 2nd year Computer Engineering)	#
+#June-2016															#
+#####################################################################
+
+
+
 import os, sys, inspect, thread, time									#
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))		#specify the location of librery of leap sdk
 arch_dir = '../lib/x64' if sys.maxsize > 2**32 else '../lib/x86'		#
