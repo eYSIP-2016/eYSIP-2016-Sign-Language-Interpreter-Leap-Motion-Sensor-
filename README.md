@@ -1,2 +1,2 @@
-here you can find two project one is mechenical hand followed by leap motion sensor so robotic hand will copy the movement of our real hand
-and another is sign langage interpreter. here gestures are converted in to audio so it helps deaf and dump people to communicate with normal people
+Here you can find two projects, one is a mechanical hand which  follows gestures as performed over leap motion sensor and thus the robotic hand will copy the movement of our real hand.
+Another is the sign langage interpreter. Here gestures are converted in to an audible sound in order to ease the communication between  eaf and dumb people and others.
