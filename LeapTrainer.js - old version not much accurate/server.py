@@ -1,6 +1,6 @@
 
 ###THIS WILL RUN AT PC SIDE###
-###Whole documented code will be soon###
+
 
 import tornado.websocket
 import nltk
@@ -16,6 +16,7 @@ import websocket
 class wshandle (tornado.websocket.WebSocketHandler):
 	websocket.enableTrace(False)
 	ws = websocket.create_connection("ws://169.254.6.158:9090")
+		#make websocket connection with Galileo board
 	def open(self):
 		print "connection open..."
 	
@@ -44,7 +45,6 @@ class wshandle (tornado.websocket.WebSocketHandler):
 					f = 0
 					final = ""
 					final += j[0]
-				##    print final
 					chunk = r"""VB: {<VBZ>*<VBP>?}"""
 					cp = nltk.RegexpParser(chunk)
 					word = nltk.word_tokenize(t[0])
@@ -55,12 +55,12 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						if subtree.label() == 'VB':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print final
+				
 								flg = 1
 							break
 					if flg == 0:
 						final += " is"
-				##        print "1"+final
+			
 					chunk = r"""PRP: {<PRP.?>?}"""
 					cp = nltk.RegexpParser(chunk)
 					ch = cp.parse(tagged)
@@ -68,7 +68,7 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						if subtree.label() == 'PRP':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print "2"+final
+				
 					chunk = r"""PRP: {<JJ.?>?}"""
 					cp = nltk.RegexpParser(chunk)
 					ch = cp.parse(tagged)
@@ -76,7 +76,7 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						if subtree.label() == 'PRP':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print "2"+final
+				
 					chunk = r"""PRP: {<RB.?>?}"""
 					cp = nltk.RegexpParser(chunk)
 					ch = cp.parse(tagged)
@@ -84,7 +84,7 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						if subtree.label() == 'PRP':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print "2"+final
+				
 					chunk = r"""PRP: {<VB.?>?}"""
 					cp = nltk.RegexpParser(chunk)
 					ch = cp.parse(tagged)
@@ -92,7 +92,7 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						if subtree.label() == 'PRP':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print "2"+final
+				
 					chunk = r"""NN: {<NN.?>?}"""
 					cp = nltk.RegexpParser(chunk)
 					ch = cp.parse(tagged)
@@ -138,13 +138,13 @@ class wshandle (tornado.websocket.WebSocketHandler):
 						final += " is"
 					chunk = r"""PRP: {<PRP.?>?}"""
 					cp = nltk.RegexpParser(chunk)
-				##    print nltk.pos_tag(w)
+				
 					ch = cp.parse(nltk.pos_tag(w))
 					for subtree in ch.subtrees():
 						if subtree.label() == 'PRP':
 							for j in subtree.leaves():
 								final += " "+j[0]
-				##                print "2"+final
+				
 								w.remove(j[0])
 					chunk = r"""NN: {<NN.?>?}"""
 					cp = nltk.RegexpParser(chunk)
@@ -157,7 +157,7 @@ class wshandle (tornado.websocket.WebSocketHandler):
 									f = 1
 								else:
 									final += " of "+j[0]
-				##                print j[0]
+				
 								w.remove(j[0])
 					f = 0
 					for wrd in w:
