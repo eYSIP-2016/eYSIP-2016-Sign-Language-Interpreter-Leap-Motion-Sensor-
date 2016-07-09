@@ -12,7 +12,7 @@ Sign Language Interpretation project is to help hearing-impaired and verbally ch
 
 Sign Language Interpretation uses the following components:
 
-* **Leap Motion Sensor:**
+* **Leap Motion Sensor**
 
 * **Galileo board**
 
