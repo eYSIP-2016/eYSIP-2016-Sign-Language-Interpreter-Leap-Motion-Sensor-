@@ -12,7 +12,7 @@ Sign Language Interpretation project is to help hearing-impaired and verbally ch
 
 Sign Language Interpretation uses the following components:
 
-* **Leap Motion Sensor:**
+* **Leap Motion Sensor**
 
 * **Galileo board**
 
@@ -32,7 +32,7 @@ Sign Language Interpretation uses the following components:
 
 ***
 
-Sign Language Interpretation system made for converting sign language to audio. After recognizing words, the system will make the whole sentence using NLTK and play pre-recorded files from MP3 module. In another part,whatever I perform on leap motion sensor, the robotic hand will replicate that pose.
+Sign Language Interpretation system made for converting sign language to audio. After recognizing words, the system will make the whole sentence using NLTK and play pre-recorded files from MP3 module. In another part,whatever a person will perform on leap motion sensor, the robotic hand will replicate that pose.
 
 
 
