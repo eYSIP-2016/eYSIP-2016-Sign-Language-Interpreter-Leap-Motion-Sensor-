@@ -22,9 +22,7 @@ Sign Language Interpretation uses the following components:
 
 * **InMoov Robotic Hand**
 
-* **Servo Motors** (Python 2.7)
-
-* **Companion Computer:** Raspberry Pi B+ model
+* **Servo Motors**
 
 
 
