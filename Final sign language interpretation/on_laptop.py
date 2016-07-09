@@ -6,7 +6,7 @@
 #June-2016															#
 #####################################################################
 
-
+###THIS WILL BE RUN ON PC###
 
 import os, sys, inspect, thread, time
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))

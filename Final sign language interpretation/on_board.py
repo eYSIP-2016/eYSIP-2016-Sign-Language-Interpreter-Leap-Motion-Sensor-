@@ -6,6 +6,7 @@
 #June-2016															#
 #####################################################################
 
+###THIS WILL BE RUN ON GALILEO BOARD###
 
 
 import tornado.ioloop
@@ -22,7 +23,7 @@ import binascii
 
 class WSHandler(tornado.websocket.WebSocketHandler):				#it is websocket listener class
 
-    map_with_filename = [											#here all word are mapped with file number
+    map_with_filename = [
 			('THANK YOU','14'),
             ('HELLO', '20'),
             ('EAT','21'),
@@ -60,7 +61,23 @@ class WSHandler(tornado.websocket.WebSocketHandler):				#it is websocket listene
             ('YOU','44'),
             ('ARE','54'),
             ('IS','55'),
-            ('YOUR','56')
+            ('YOUR','56'),
+            ('TOILET','57'),
+            ('FATHER','58'),
+            ('FRIEND','59'),
+            ('SORRY','60'),
+            ('DONE','61'),
+            ('HAVE', '62'),
+            ('SLOW','63'),
+            ('WRITE','64'),
+            ('ALSO','65'),
+            ('DIFFERENT','67'),
+            ('SORRY','68'),
+            ('UNDERSTAND','69'),
+            ('OK','70'),
+            ('EXCUSE ME','71'),
+            ('WORK','72'),
+            ('FRIEND','66')
          ]
                                                                                                                                                                                             
     play_from_sdcard = bytearray([0x7E,0xFF,0x06,0x09,0x00,0x00,0x02,0xFE,0xF0,0xEF])			#this is code for playing file from sdcard
