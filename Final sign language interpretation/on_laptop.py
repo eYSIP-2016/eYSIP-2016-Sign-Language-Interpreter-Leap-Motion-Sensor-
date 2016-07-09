@@ -33,7 +33,7 @@ from urllib2 import URLError
 from getch import getch, pause
 import numpy as np
 websocket.enableTrace(True)
-ws = websocket.create_connection("ws://169.254.6.158:1234")			#make websocket connection with Galileo board
+ws = websocket.create_connection("ws://169.254.11.145:1234")			#make websocket connection with Galileo board
 
 
 
