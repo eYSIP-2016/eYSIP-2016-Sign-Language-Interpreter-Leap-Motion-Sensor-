@@ -10,7 +10,7 @@ Sign Language Interpretation project is to help hearing-impaired and verbally ch
 
 
 
-Sign Language Interpretation uses the following components:
+This project uses the following components:
 
 * **Leap Motion Sensor**
 
