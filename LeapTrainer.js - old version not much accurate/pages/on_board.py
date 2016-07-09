@@ -11,13 +11,15 @@ import mraa
 import time
 import binascii
 
-u = mraa.Uart(0)
-u.setBaudRate(9600)
+u = mraa.Uart(0) #getting uart object
+u.setBaudRate(9600)#setting baudrate
 
 track_hex = bytearray([0x7E,0xFF,0x06,0x03,0x00,0x00,0xFF,0xFF,0xFF,0xEF])
-
+#it is sample hex code for specifying track number. then we need to change chack bits and track number
 
 class WSHandler(tornado.websocket.WebSocketHandler):
+#it is websocket listener class
+
 
     map_with_filename = [
             ('I FEEL SLEEPY', '9'),
@@ -87,12 +89,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     u.setBaudRate(9600)
     u.write(play_from_sdcard)
     def open(self):
+		#this method is called when new connection is established 
         print 'connection opened...'
         self.write_message("The server says: 'Hello'. Connection was accepted.")
-       #self.play_file(2)
-
+       
     def on_message(self, message):
-        #self.write_message("The server says: " + message + " back at you")
+		#this method is called when new message is arrived
+       #there are different flag messages for specifik taks like,
+	   #   "#456#"   for retraining
+	   #	"#123#" for loading data to json file
+	   # "#789#" for whole sentnces
         print message
         if message == "#123#":
             WSHandler.flg = 1
@@ -151,17 +157,22 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         print 'connection closed...'
 
     def check_origin(self, origin):
-        return True
+ 		
+#param: string (filename)
+#return: none
+#working: play given filenumver
+#example: play_file("3")       return True
 
     def play_file(self,file_name):
-        filename_hex = hex(file_name)
-        WSHandler.track_hex[6] = int(filename_hex,16)
-        sum_of_data = hex(WSHandler.track_hex[1]+WSHandler.track_hex[2]+WSHandler.track_hex[3]+WSHandler.track_hex[4]+WSHandler.track_hex[5]+WSHandler.track_hex[6])
-        binary_str = bin(int(sum_of_data,16))[2:].zfill(16)
-        individual_digit = list(binary_str)
+        filename_hex = hex(file_name)#this method create hex code for playing specific file
+        WSHandler.track_hex[6] = int(filename_hex,16)		#it stores filename in hex code
+        sum_of_data = hex(WSHandler.track_hex[1]+WSHandler.track_hex[2]+WSHandler.track_hex[3]+WSHandler.track_hex[4]+WSHandler.track_hex[5]+WSHandler.track_hex[6])		#now we will find chackbits
+        binary_str = bin(int(sum_of_data,16))[2:].zfill(16)	#here hex string is  converted in binary string
+        individual_digit = list(binary_str)	#here hex string is  converted in binary string
         count = 0
         for i in individual_digit:
             if i == '0':
+			#here we are converting all 0 to 1 and all 1 to 0 to generate chack bits
                 individual_digit[count] = '1'
             elif i == '1':
                 individual_digit[count] = '0'
@@ -169,24 +180,28 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
         binary_str = "".join(individual_digit)
         final_check_bit = hex(int(binary_str,2) + int('1',2))
+		#again convert
+		#character array to binary string
         final_check_bit_list = list(final_check_bit)
         first_two_digit = "0x"+final_check_bit_list[2] + final_check_bit_list[3]
         second_two_digit = "0x"+final_check_bit_list[4] + final_check_bit_list[5]
-        WSHandler.track_hex[7] = int(first_two_digit,16)
+        WSHandler.track_hex[7] = int(first_two_digit,16)#storing generated chackbits to hex code
         WSHandler.track_hex[8] = int(second_two_digit,16)
         u.write(WSHandler.track_hex)
 
+#sending hex data to mp3 module
 
 
 
 
 application = tornado.web.Application([
     (r'/', WSHandler),
-])
+	#create object of websocket listener
+]) port number 1234
 
 if __name__ == "__main__":
-    application.listen(9090)
-    tornado.ioloop.IOLoop.instance().start()
+    application.listen(9090)					#set port number 1234
+    tornado.ioloop.IOLoop.instance().start()		#start websocket server
     try:
         sys.stdin.readline()
     except KeyboardInterrupt:

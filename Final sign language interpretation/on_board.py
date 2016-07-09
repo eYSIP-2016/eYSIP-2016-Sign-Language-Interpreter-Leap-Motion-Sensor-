@@ -22,7 +22,7 @@ import binascii
 
 
 class WSHandler(tornado.websocket.WebSocketHandler):				#it is websocket listener class
-
+#map for words to file number
     map_with_filename = [
 			('THANK YOU','14'),
             ('HELLO', '20'),
